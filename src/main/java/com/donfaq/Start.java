@@ -8,6 +8,10 @@ public class Start {
 
 
     public static void main(String[] args) {
-        log.info("Hello World!");
+        log.debug("Initializing vk api");
+//        Integer vkGroupId = Integer.valueOf(System.getenv("VK_GROUP_ID"));
+//        String vkGroupToken = System.getenv("VK_GROUP_TOKEN");
+//        String vkGroupConfirmationCode = System.getenv("VK_GROUP_CONFIRMATION_CODE");
+
     }
 }

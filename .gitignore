@@ -2,3 +2,5 @@
 *.iml
 *.log
 target/
+.env
+*.xml
