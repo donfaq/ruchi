@@ -1,13 +1,14 @@
 package com.donfaq;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class CallbackData {
     private String type;
     private String groupId;
-    private Map<String, String> object;
+    Object object;
+
 
     public CallbackData() {
     }
@@ -29,12 +30,14 @@ public class CallbackData {
         this.groupId = groupId;
     }
 
-    public Map<String, String> getObject() {
-        return object;
+    @JsonRawValue
+    public String getObject() {
+        // default raw value: null or "[]"
+        return this.object == null ? null : this.object.toString();
     }
 
-    public void setObject(Map<String, String> object) {
-        this.object = object;
+    public void setObject(JsonNode node) {
+        this.object = node;
     }
 
     @Override
