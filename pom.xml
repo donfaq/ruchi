@@ -14,9 +14,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.log4j>2.11.2</version.log4j>
-        <version.vk-api>1.0.6</version.vk-api>
         <version.spring-boot>2.1.8.RELEASE</version.spring-boot>
+        <version.jackson>2.9.9</version.jackson>
     </properties>
 
     <parent>
@@ -36,16 +35,24 @@
     </build>
 
     <dependencies>
+        <!--        spring-boot-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${version.spring-boot}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>${version.spring-boot}</version>
+        </dependency>
 
+        <!--        other-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.9</version>
+            <version>${version.jackson}</version>
         </dependency>
     </dependencies>
 

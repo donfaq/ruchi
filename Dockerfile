@@ -12,15 +12,16 @@ FROM openjdk:8-jre-alpine3.9 AS runtime
 ENV PORT 8080
 RUN apk --no-cache add curl
 
-RUN adduser -D dummy
-USER dummy
-
 WORKDIR /app
 
 COPY --from=maven target/ruchi-integration-1.0.jar /app/app.jar
 COPY entrypoint.sh /app/entrypoint.sh
 
 RUN chmod +x /app/entrypoint.sh
+
+RUN adduser -D dummy
+USER dummy
+
 CMD ["/app/entrypoint.sh"]
 
 #HEALTHCHECK --interval=30s --timeout=3s \
