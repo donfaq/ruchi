@@ -16,6 +16,7 @@
 
         <version.spring-boot>2.1.8.RELEASE</version.spring-boot>
         <version.jackson>2.9.9</version.jackson>
+        <version.jda>4.0.0_39</version.jda>
     </properties>
 
     <parent>
@@ -33,6 +34,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter-bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!--        spring-boot-->
@@ -54,6 +63,17 @@
             <artifactId>jackson-core</artifactId>
             <version>${version.jackson}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>${version.jda}</version>
+        </dependency>
+
+
+
     </dependencies>
+
+
 
 </project>
