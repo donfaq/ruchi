@@ -17,6 +17,7 @@ jobs:
       run: mvn package --file pom.xml
 
   release:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
