@@ -6,10 +6,12 @@ RUN mvn dependency:go-offline -B
 COPY ./src ./src
 RUN mvn package
 
-#FROM openjdk:8-jre-alpine3.9
-FROM jetty:9.4.18-jre8-alpine
+FROM openjdk:8-jre-alpine3.9
+RUN apk --no-cache add curl
 
 WORKDIR /app
-COPY --from=maven target/ruchi-integration-*.jar ./
-
+COPY --from=maven target/ruchi-integration-1.0.jar ./
 CMD ["java", "-jar", "./ruchi-integration-1.0.jar"]
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl --silent --fail localhost:8080/health || exit 1
