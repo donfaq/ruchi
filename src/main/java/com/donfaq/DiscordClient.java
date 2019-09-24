@@ -5,7 +5,6 @@ import com.donfaq.objects.Wallpost;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.ArrayDeque;
@@ -25,6 +24,7 @@ public class DiscordClient {
             discordChannel = (TextChannel) new JDABuilder(AccountType.BOT)
                     .setToken(DISCORD_BOT_TOKEN)
                     .build()
+                    .awaitReady()
                     .getGuildChannelById(ChannelType.TEXT, DISCORD_CHANNEL_ID);
         } catch (Exception e) {
             throw new RuntimeException("Discord connection error");
@@ -39,7 +39,7 @@ public class DiscordClient {
 
             String text = wallpost.getText();
             if (text != null) {
-                discordChannel.sendMessage(wallpost.getText()).queue();
+                discordChannel.sendMessage(text).queue();
             }
         }
 

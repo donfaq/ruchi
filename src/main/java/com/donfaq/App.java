@@ -38,8 +38,8 @@ public class App {
             log.info(callbackData.toString());
             discord.sendMessage(callbackData);
         }
-        return response;
 
+        return response;
     }
 
     public static void main(String[] args) {
