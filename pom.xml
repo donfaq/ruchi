@@ -70,10 +70,7 @@
             <version>${version.jda}</version>
         </dependency>
 
-
-
     </dependencies>
-
 
 
 </project>

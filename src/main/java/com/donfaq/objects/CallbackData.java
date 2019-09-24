@@ -1,13 +1,11 @@
-package com.donfaq;
+package com.donfaq.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class CallbackData {
     private String type;
     private String groupId;
-    Object object;
+    private Wallpost object;
 
 
     public CallbackData() {
@@ -30,14 +28,12 @@ public class CallbackData {
         this.groupId = groupId;
     }
 
-    @JsonRawValue
-    public String getObject() {
-        // default raw value: null or "[]"
-        return this.object == null ? null : this.object.toString();
+    public Wallpost getObject() {
+        return object;
     }
 
-    public void setObject(JsonNode node) {
-        this.object = node;
+    public void setObject(Wallpost object) {
+        this.object = object;
     }
 
     @Override
