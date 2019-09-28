@@ -39,8 +39,15 @@ public class DiscordProcessor {
     }
 
     private boolean isContainsPhotoAttachment(Wallpost wallpost) {
-        log.info(wallpost.getAttachments().toString());
-        return false;
+        boolean result = false;
+
+        if (wallpost.getAttachments() != null) {
+            result = wallpost
+                    .getAttachments()
+                    .stream()
+                    .anyMatch(attachment -> attachment.getType().equals("photo"));
+        }
+        return result;
     }
 
     private boolean isSentEarlier(Wallpost wallpost) {
