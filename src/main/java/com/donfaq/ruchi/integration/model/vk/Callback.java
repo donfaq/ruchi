@@ -1,14 +1,14 @@
-package com.donfaq.objects;
+package com.donfaq.ruchi.integration.model.vk;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CallbackData {
+public class Callback {
     private String type;
     private String groupId;
     private Wallpost object;
 
 
-    public CallbackData() {
+    public Callback() {
     }
 
     public String getType() {
