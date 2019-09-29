@@ -64,7 +64,7 @@ public class VkServiceImpl implements VkService {
         return result;
     }
 
-    private String construnctPhotoId(Photo photo) {
+    private String constructPhotoId(Photo photo) {
         return photo.getOwnerId() + "_" + photo.getId() + "_" + photo.getAccessKey();
 
     }
@@ -88,7 +88,7 @@ public class VkServiceImpl implements VkService {
         String photos = wallpost.getAttachments()
                 .stream()
                 .filter(attachment -> "photo".equals(attachment.getType()))
-                .map(attachment -> construnctPhotoId(attachment.getPhoto()))
+                .map(attachment -> constructPhotoId(attachment.getPhoto()))
                 .collect(Collectors.joining(","));
 
         return getPhotoDetails(photos)
@@ -99,6 +99,7 @@ public class VkServiceImpl implements VkService {
 
     @Override
     public String getText(Callback callback) {
+        log.info("Extracting message text from callback");
         String text = "";
         Wallpost wallpost = callback.getObject();
 

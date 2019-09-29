@@ -35,8 +35,12 @@ public class DiscordServiceImpl implements DiscordService {
         this.sentMessages = new ArrayDeque<>(10);
     }
 
-    private boolean isSentEarlier(String message) {
+    private synchronized boolean isSentEarlier(String message) {
         return sentMessages.contains(message);
+    }
+
+    private synchronized void markAsSent(String message) {
+        sentMessages.add(message);
     }
 
     @Override
@@ -44,7 +48,7 @@ public class DiscordServiceImpl implements DiscordService {
         if (!isSentEarlier(message)) {
             log.info("Sending new message to Discord channel");
             textChannel.sendMessage(message).queue();
-            sentMessages.add(message);
+            markAsSent(message);
         } else {
             log.info("Message already been sent");
         }
