@@ -107,7 +107,7 @@ public class VkServiceImpl implements VkService {
         }
 
         if (isContainsPhotoAttachment(wallpost)) {
-            text += getPhotoText(wallpost);
+            text += "\n\n" +  getPhotoText(wallpost);
         }
 
         return text;
