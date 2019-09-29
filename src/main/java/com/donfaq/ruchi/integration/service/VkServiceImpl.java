@@ -1,8 +1,6 @@
 package com.donfaq.ruchi.integration.service;
 
-import com.donfaq.ruchi.integration.model.vk.Callback;
-import com.donfaq.ruchi.integration.model.vk.Photo;
-import com.donfaq.ruchi.integration.model.vk.Wallpost;
+import com.donfaq.ruchi.integration.model.vk.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VkServiceImpl implements VkService {
@@ -62,8 +64,37 @@ public class VkServiceImpl implements VkService {
         return result;
     }
 
+    private String construnctPhotoId(Photo photo) {
+        return photo.getOwnerId() + "_" + photo.getId() + "_" + photo.getAccessKey();
+
+    }
+
+    private String getLargestPhotoUrl(Photo photo) {
+        String result = "";
+        for (String sizeType : Arrays.asList("w", "z", "y", "x", "m", "s")) {
+            Optional<PhotoSizes> largestSize = photo
+                    .getSizes()
+                    .stream()
+                    .filter(sizes -> sizeType.equals(sizes.getType()))
+                    .findAny();
+            if(largestSize.isPresent()) {
+                return largestSize.get().getUrl().toString();
+            }
+        }
+        return result;
+    }
+
     private String getPhotoText(Wallpost wallpost) {
-        return "<photo url>";
+        String photos = wallpost.getAttachments()
+                .stream()
+                .filter(attachment -> "photo".equals(attachment.getType()))
+                .map(attachment -> construnctPhotoId(attachment.getPhoto()))
+                .collect(Collectors.joining(","));
+
+        return getPhotoDetails(photos)
+                .stream()
+                .map(this::getLargestPhotoUrl)
+                .collect(Collectors.joining("\n"));
     }
 
     @Override
@@ -82,34 +113,29 @@ public class VkServiceImpl implements VkService {
         return text;
     }
 
-    public void getPhotoDetails(Photo photo) {
+    public List<Photo> getPhotoDetails(String photos) {
         String uri = VK_BASE_URI + "photos.getById";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
                 .queryParam("v", VK_API_VERSION)
                 .queryParam("access_token", vkServiceAccessToken)
-                .queryParam("photos", "");
+                .queryParam("photos", photos)
+                .queryParam("photo_sizes", 1);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-
-        ResponseEntity<List<Photo>> response = restTemplate.exchange(
+        ResponseEntity<Map<String, List<Photo>>> response = restTemplate.exchange(
                 builder.toUriString(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<List<Photo>>() {
+                new ParameterizedTypeReference<Map<String, List<Photo>>>() {
                 }
         );
 
-        List<Photo> photos = response.getBody();
+        return response.getBody().get("response");
 
-        if (photos != null) {
-            for (Photo p : photos) {
-                log.info(p.toString());
-            }
-        }
 
     }
 }

@@ -68,7 +68,7 @@ public class Photo {
     private Integer postId;
 
     @JsonProperty("sizes")
-    private List<Photo> sizes;
+    private List<PhotoSizes> sizes;
 
     /**
      * Photo caption
@@ -168,11 +168,11 @@ public class Photo {
         this.postId = postId;
     }
 
-    public List<Photo> getSizes() {
+    public List<PhotoSizes> getSizes() {
         return sizes;
     }
 
-    public void setSizes(List<Photo> sizes) {
+    public void setSizes(List<PhotoSizes> sizes) {
         this.sizes = sizes;
     }
 
