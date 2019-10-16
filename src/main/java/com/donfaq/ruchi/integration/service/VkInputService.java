@@ -1,6 +1,11 @@
 package com.donfaq.ruchi.integration.service;
 
-import com.donfaq.ruchi.integration.model.vk.*;
+import com.donfaq.ruchi.integration.model.InputType;
+import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.vk.Callback;
+import com.donfaq.ruchi.integration.model.vk.Photo;
+import com.donfaq.ruchi.integration.model.vk.PhotoSizes;
+import com.donfaq.ruchi.integration.model.vk.Wallpost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +24,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class VkServiceImpl implements VkService {
-    private final Logger log = LoggerFactory.getLogger(VkServiceImpl.class);
+public class VkInputService implements InputService {
+    private final Logger log = LoggerFactory.getLogger(VkInputService.class);
 
     @Value("${vk.confirmationCode}")
     private String confirmationCode;
@@ -32,20 +37,18 @@ public class VkServiceImpl implements VkService {
     private static final String VK_BASE_URI = "https://api.vk.com/method/";
 
     private RestTemplate restTemplate;
+    private BroadcastService broadcastService;
+
 
     @Autowired
-    public VkServiceImpl(RestTemplateBuilder restTemplateBuilder) {
-        restTemplate = restTemplateBuilder.build();
+    public VkInputService(RestTemplateBuilder restTemplateBuilder, BroadcastService broadcastService) {
+        this.restTemplate = restTemplateBuilder.build();
+        this.broadcastService = broadcastService;
     }
 
-    @Override
+
     public boolean isConfirmation(Callback callback) {
         return "confirmation".equals(callback.getType());
-    }
-
-    @Override
-    public String getConfirmationCode() {
-        return this.confirmationCode;
     }
 
     private boolean isContainsText(Wallpost wallpost) {
@@ -77,7 +80,7 @@ public class VkServiceImpl implements VkService {
                     .stream()
                     .filter(sizes -> sizeType.equals(sizes.getType()))
                     .findAny();
-            if(largestSize.isPresent()) {
+            if (largestSize.isPresent()) {
                 return largestSize.get().getUrl().toString();
             }
         }
@@ -85,19 +88,26 @@ public class VkServiceImpl implements VkService {
     }
 
     private String getPhotoText(Wallpost wallpost) {
+        String result = "";
+
         String photos = wallpost.getAttachments()
                 .stream()
                 .filter(attachment -> "photo".equals(attachment.getType()))
                 .map(attachment -> constructPhotoId(attachment.getPhoto()))
                 .collect(Collectors.joining(","));
 
-        return getPhotoDetails(photos)
-                .stream()
-                .map(this::getLargestPhotoUrl)
-                .collect(Collectors.joining("\n"));
+        Optional<List<Photo>> photoDetails = getPhotoDetails(photos);
+
+        if(photoDetails.isPresent()) {
+            result = photoDetails
+                    .get()
+                    .stream()
+                    .map(this::getLargestPhotoUrl)
+                    .collect(Collectors.joining("\n"));
+        }
+        return result;
     }
 
-    @Override
     public String getText(Callback callback) {
         log.info("Extracting message text from callback");
         String text = "";
@@ -108,13 +118,13 @@ public class VkServiceImpl implements VkService {
         }
 
         if (isContainsPhotoAttachment(wallpost)) {
-            text += "\n\n" +  getPhotoText(wallpost);
+            text += "\n\n" + getPhotoText(wallpost);
         }
 
         return text;
     }
 
-    public List<Photo> getPhotoDetails(String photos) {
+    public Optional<List<Photo>> getPhotoDetails(String photos) {
         String uri = VK_BASE_URI + "photos.getById";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
@@ -135,8 +145,23 @@ public class VkServiceImpl implements VkService {
                 }
         );
 
-        return response.getBody().get("response");
+        return Optional.of(response.getBody().get("response"));
+    }
 
+    @Override
+    public String process(InputType inputMessage) {
+        Callback callback = (Callback) inputMessage;
+        String result = "ok";
 
+        if (isConfirmation(callback)) {
+            log.info("Confirmation request");
+            result = this.confirmationCode;
+        } else {
+            BroadcastMessage broadcastMessage = new BroadcastMessage();
+            broadcastMessage.setText(getText(callback));
+
+            broadcastService.broadcast(broadcastMessage);
+        }
+        return result;
     }
 }

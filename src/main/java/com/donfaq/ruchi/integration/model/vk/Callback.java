@@ -1,8 +1,9 @@
 package com.donfaq.ruchi.integration.model.vk;
 
+import com.donfaq.ruchi.integration.model.InputType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Callback {
+public class Callback implements InputType {
     private String type;
     private String groupId;
     private Wallpost object;

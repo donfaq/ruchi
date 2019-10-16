@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.integration.service;
 
+import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -12,23 +13,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 @Service
-public class DiscordServiceImpl implements DiscordService {
-    private final Logger log = LoggerFactory.getLogger(DiscordServiceImpl.class);
-    private JDA jda;
+public class DiscordOutputService implements OutputService {
+    private final Logger log = LoggerFactory.getLogger(DiscordOutputService.class);
     private TextChannel textChannel;
-    private Deque<String> sentMessages;
 
     @Autowired
-    public DiscordServiceImpl(
+    public DiscordOutputService(
             @Value("${discord.botToken}") final String botToken,
             @Value("${discord.channelId}") final long channelId
     ) throws LoginException, InterruptedException {
         log.info("Connecting to Discord bot");
-        jda = new JDABuilder(AccountType.BOT)
+        JDA jda = new JDABuilder(AccountType.BOT)
                 .setToken(botToken)
                 .build()
                 .awaitReady();
@@ -42,26 +39,13 @@ public class DiscordServiceImpl implements DiscordService {
         if (!textChannel.canTalk()) {
             throw new Error("Insufficient permissions in specified channel. Check Read and Write messages permissions");
         }
-        this.sentMessages = new ArrayDeque<>(10);
-        log.info("Discord Service ready");
+        log.info("DiscordOutputService ready to send messages");
     }
 
-    private synchronized boolean isSentEarlier(String message) {
-        return sentMessages.contains(message);
-    }
-
-    private synchronized void markAsSent(String message) {
-        sentMessages.add(message);
-    }
 
     @Override
-    public void sendMessageToTextChannel(String message) {
-        if (!isSentEarlier(message)) {
-            log.info("Sending new message to Discord channel");
-            textChannel.sendMessage(message).queue();
-            markAsSent(message);
-        } else {
-            log.info("Message already been sent");
-        }
+    public void send(BroadcastMessage broadcastMessage) {
+        log.info("Sending new message to Discord channel");
+        textChannel.sendMessage(broadcastMessage.getFullText()).queue();
     }
 }
