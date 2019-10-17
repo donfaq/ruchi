@@ -1,6 +1,6 @@
-package com.donfaq.ruchi.integration.service;
+package com.donfaq.ruchi.integration.service.memory;
 
-import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 
 public interface MessagesMemory {
     void add(BroadcastMessage message);

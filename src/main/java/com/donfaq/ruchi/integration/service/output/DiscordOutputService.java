@@ -1,6 +1,6 @@
-package com.donfaq.ruchi.integration.service;
+package com.donfaq.ruchi.integration.service.output;
 
-import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -44,8 +44,8 @@ public class DiscordOutputService implements OutputService {
 
 
     @Override
-    public void send(BroadcastMessage broadcastMessage) {
+    public void send(BroadcastMessage message) {
         log.info("Sending new message to Discord channel");
-        textChannel.sendMessage(broadcastMessage.getFullText()).queue();
+        textChannel.sendMessage(message.getFullText()).queue();
     }
 }

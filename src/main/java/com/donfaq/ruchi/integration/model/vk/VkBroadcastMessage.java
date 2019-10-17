@@ -1,10 +1,12 @@
-package com.donfaq.ruchi.integration.model.common;
+package com.donfaq.ruchi.integration.model.vk;
 
-public class BroadcastMessage {
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
+
+public class VkBroadcastMessage implements BroadcastMessage {
 
     private String text;
 
-    public BroadcastMessage() {
+    public VkBroadcastMessage() {
     }
 
     public String getText() {

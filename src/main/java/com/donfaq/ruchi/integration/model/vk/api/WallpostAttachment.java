@@ -1,4 +1,4 @@
-package com.donfaq.ruchi.integration.model.vk;
+package com.donfaq.ruchi.integration.model.vk.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

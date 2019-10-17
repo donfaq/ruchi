@@ -1,11 +1,12 @@
-package com.donfaq.ruchi.integration.service;
+package com.donfaq.ruchi.integration.service.input;
 
 import com.donfaq.ruchi.integration.model.InputType;
-import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
-import com.donfaq.ruchi.integration.model.vk.Callback;
-import com.donfaq.ruchi.integration.model.vk.Photo;
-import com.donfaq.ruchi.integration.model.vk.PhotoSizes;
-import com.donfaq.ruchi.integration.model.vk.Wallpost;
+import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
+import com.donfaq.ruchi.integration.model.vk.VkInputType;
+import com.donfaq.ruchi.integration.model.vk.api.Photo;
+import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
+import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
+import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,10 @@ public class VkInputService implements InputService {
     private String confirmationCode;
 
     @Value("${vk.serviceAccessToken}")
-    private String vkServiceAccessToken;
+    private String serviceAccessToken;
+
+    @Value("${TRIGGER_STRING}")
+    private String triggerString;
 
     private static final String VK_API_VERSION = "5.77";
     private static final String VK_BASE_URI = "https://api.vk.com/method/";
@@ -47,7 +51,7 @@ public class VkInputService implements InputService {
     }
 
 
-    public boolean isConfirmation(Callback callback) {
+    public boolean isConfirmation(VkInputType callback) {
         return "confirmation".equals(callback.getType());
     }
 
@@ -98,7 +102,7 @@ public class VkInputService implements InputService {
 
         Optional<List<Photo>> photoDetails = getPhotoDetails(photos);
 
-        if(photoDetails.isPresent()) {
+        if (photoDetails.isPresent()) {
             result = photoDetails
                     .get()
                     .stream()
@@ -108,7 +112,7 @@ public class VkInputService implements InputService {
         return result;
     }
 
-    public String getText(Callback callback) {
+    public String getText(VkInputType callback) {
         log.info("Extracting message text from callback");
         String text = "";
         Wallpost wallpost = callback.getObject();
@@ -129,7 +133,7 @@ public class VkInputService implements InputService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
                 .queryParam("v", VK_API_VERSION)
-                .queryParam("access_token", vkServiceAccessToken)
+                .queryParam("access_token", serviceAccessToken)
                 .queryParam("photos", photos)
                 .queryParam("photo_sizes", 1);
 
@@ -145,22 +149,31 @@ public class VkInputService implements InputService {
                 }
         );
 
-        return Optional.of(response.getBody().get("response"));
+        Optional<List<Photo>> result = Optional.empty();
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            result = Optional.of(response.getBody().get("response"));
+        }
+
+        return result;
     }
 
     @Override
     public String process(InputType inputMessage) {
-        Callback callback = (Callback) inputMessage;
+        VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";
 
         if (isConfirmation(callback)) {
             log.info("Confirmation request");
             result = this.confirmationCode;
         } else {
-            BroadcastMessage broadcastMessage = new BroadcastMessage();
-            broadcastMessage.setText(getText(callback));
-
-            broadcastService.broadcast(broadcastMessage);
+            log.info("Processing callback message");
+            String messageText = getText(callback);
+            if (messageText.contains(this.triggerString)) {
+                VkBroadcastMessage vkBroadcastMessage = new VkBroadcastMessage();
+                vkBroadcastMessage.setText(messageText);
+                broadcastService.broadcast(vkBroadcastMessage);
+            }
+            log.info("Message doesn't contain trigger string");
         }
         return result;
     }

@@ -1,7 +1,7 @@
 package com.donfaq.ruchi.integration.controller;
 
-import com.donfaq.ruchi.integration.model.vk.Callback;
-import com.donfaq.ruchi.integration.service.VkInputService;
+import com.donfaq.ruchi.integration.model.vk.VkInputType;
+import com.donfaq.ruchi.integration.service.input.VkInputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +17,7 @@ public class InputController {
     }
 
     @PostMapping("/vk")
-    public Object vkCallback(@RequestBody Callback callback) {
+    public Object vkCallback(@RequestBody VkInputType callback) {
         return this.vkInputService.process(callback);
     }
 }

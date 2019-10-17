@@ -1,6 +1,6 @@
-package com.donfaq.ruchi.integration.service;
+package com.donfaq.ruchi.integration.service.memory;
 
-import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

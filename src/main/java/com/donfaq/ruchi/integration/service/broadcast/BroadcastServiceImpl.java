@@ -1,6 +1,8 @@
-package com.donfaq.ruchi.integration.service;
+package com.donfaq.ruchi.integration.service.broadcast;
 
-import com.donfaq.ruchi.integration.model.common.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
+import com.donfaq.ruchi.integration.service.memory.MessagesMemory;
+import com.donfaq.ruchi.integration.service.output.OutputService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ public class BroadcastServiceImpl implements BroadcastService {
 
     @Override
     public void broadcast(BroadcastMessage message) {
-        if(!this.memory.contains(message)){
+        if (!this.memory.contains(message)) {
             log.info("Broadcasting new message");
             this.memory.add(message);
             outputServices.parallelStream().forEach(outputService -> outputService.send(message));
