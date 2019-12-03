@@ -24,10 +24,12 @@ public class BroadcastServiceImpl implements BroadcastService {
 
     @Override
     public void broadcast(BroadcastMessage message) {
-        if (!this.memory.contains(message)) {
-            log.info("Broadcasting new message");
-            this.memory.add(message);
-            outputServices.parallelStream().forEach(outputService -> outputService.send(message));
+        if (this.memory.contains(message)) {
+            log.info("Received message that has already been processed");
+            return;
         }
+        log.info("Broadcasting new message");
+        this.memory.add(message);
+        outputServices.parallelStream().forEach(outputService -> outputService.send(message));
     }
 }

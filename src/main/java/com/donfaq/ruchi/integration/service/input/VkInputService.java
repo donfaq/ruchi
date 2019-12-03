@@ -18,10 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,25 +75,20 @@ public class VkInputService implements InputService {
 
     }
 
-    private String getLargestPhotoUrl(Photo photo) {
-        String result = "";
-        for (String sizeType : Arrays.asList("w", "z", "y", "x", "m", "s")) {
-            Optional<PhotoSizes> largestSize = photo
-                    .getSizes()
-                    .stream()
-                    .filter(sizes -> sizeType.equals(sizes.getType()))
-                    .findAny();
-            if (largestSize.isPresent()) {
-                return largestSize.get().getUrl().toString();
-            }
-        }
-        return result;
+    private Optional<URL> getLargestPhotoUrl(Photo photo) {
+//        Set<String> sizes = ew HashSet<>(Arrays.asList("w", "z", "y", "x", "m", "s"));
+        return photo
+                .getSizes()
+                .stream()
+                .max(Comparator.comparing(PhotoSizes::getType))
+                .map(PhotoSizes::getUrl);
     }
 
-    private String getPhotoText(Wallpost wallpost) {
-        String result = "";
+    private List<URL> getPostImages(Wallpost wallpost) {
+        List<URL> result = new ArrayList<>();
 
-        String photos = wallpost.getAttachments()
+        String photos = wallpost
+                .getAttachments()
                 .stream()
                 .filter(attachment -> "photo".equals(attachment.getType()))
                 .map(attachment -> constructPhotoId(attachment.getPhoto()))
@@ -107,22 +101,19 @@ public class VkInputService implements InputService {
                     .get()
                     .stream()
                     .map(this::getLargestPhotoUrl)
-                    .collect(Collectors.joining("\n"));
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
         }
         return result;
     }
 
-    public String getText(VkInputType callback) {
+    public String getText(Wallpost wallpost) {
         log.info("Extracting message text from callback");
         String text = "";
-        Wallpost wallpost = callback.getObject();
 
         if (isContainsText(wallpost)) {
             text += wallpost.getText();
-        }
-
-        if (isContainsPhotoAttachment(wallpost)) {
-            text += "\n\n" + getPhotoText(wallpost);
         }
 
         return text;
@@ -157,23 +148,37 @@ public class VkInputService implements InputService {
         return result;
     }
 
+
+
+    private void processNewWallpost(Wallpost wallpost) {
+        String wallpostText = getText(wallpost);
+
+        if (wallpostText.contains(this.triggerString)) {
+
+            VkBroadcastMessage broadcastMessage = new VkBroadcastMessage();
+            broadcastMessage.setText(wallpostText);
+
+            if (isContainsPhotoAttachment(wallpost)) {
+                broadcastMessage.setImages(getPostImages(wallpost));
+            }
+
+            broadcastService.broadcast(broadcastMessage);
+
+        } else {
+            log.info("Received VK wallpost doesn't contain trigger string");
+        }
+    }
+
     @Override
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";
-
         if (isConfirmation(callback)) {
             log.info("Confirmation request");
             result = this.confirmationCode;
         } else {
-            log.info("Processing callback message");
-            String messageText = getText(callback);
-            if (messageText.contains(this.triggerString)) {
-                VkBroadcastMessage vkBroadcastMessage = new VkBroadcastMessage();
-                vkBroadcastMessage.setText(messageText);
-                broadcastService.broadcast(vkBroadcastMessage);
-            }
-            log.info("Message doesn't contain trigger string");
+            log.info("Processing new wallpost");
+            processNewWallpost(callback.getObject());
         }
         return result;
     }

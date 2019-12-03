@@ -23,9 +23,8 @@ public class DequeMessageMemory implements MessagesMemory {
         String result = "";
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(message.getFullText().getBytes());
+            messageDigest.update(message.toString().getBytes());
             result = new String(messageDigest.digest());
-
         } catch (NoSuchAlgorithmException e) {
             log.error("Wrong hashing method specified", e);
         }
