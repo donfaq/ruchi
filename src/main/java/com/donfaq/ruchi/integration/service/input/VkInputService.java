@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,7 +75,6 @@ public class VkInputService implements InputService {
     }
 
     private Optional<URL> getLargestPhotoUrl(Photo photo) {
-//        Set<String> sizes = ew HashSet<>(Arrays.asList("w", "z", "y", "x", "m", "s"));
         return photo
                 .getSizes()
                 .stream()
@@ -147,7 +145,6 @@ public class VkInputService implements InputService {
 
         return result;
     }
-
 
 
     private void processNewWallpost(Wallpost wallpost) {
