@@ -1,28 +1,25 @@
-FROM maven:3.5-jdk-8 AS maven
+FROM maven:3.5-jdk-8 AS build
 
-COPY ./pom.xml ./pom.xml
-RUN mvn dependency:go-offline -B
+WORKDIR ./app
 
-COPY ./src ./src
-RUN mvn package
+COPY pom.xml /app/pom.xml
+RUN ["/usr/local/bin/mvn-entrypoint.sh", "mvn", "dependency:go-offline", "-f", "/app/pom.xml"]
+
+COPY ./src /app/src
+RUN ["/usr/local/bin/mvn-entrypoint.sh", "mvn", "package", "-DskipTests", "-f", "/app/pom.xml"]
 
 
 FROM openjdk:8-jre-alpine3.9 AS runtime
 
-ENV PORT 8080
-RUN apk --no-cache add curl
+ENV JAR_NAME ruchi-integration-1.0.jar
 
 WORKDIR /app
+COPY --from=build /app/target/$JAR_NAME /app/$JAR_NAME
 
-COPY --from=maven target/ruchi-integration-1.0.jar /app/app.jar
-COPY entrypoint.sh /app/entrypoint.sh
-
+COPY ./entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 RUN adduser -D dummy
 USER dummy
 
 CMD ["/app/entrypoint.sh"]
-
-#HEALTHCHECK --interval=30s --timeout=3s \
-#  CMD curl --silent --fail localhost:8080/health || exit 1
