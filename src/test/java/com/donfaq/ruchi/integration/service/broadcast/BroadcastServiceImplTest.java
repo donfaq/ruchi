@@ -5,6 +5,7 @@ import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.donfaq.ruchi.integration.service.memory.MessagesMemory;
 import com.donfaq.ruchi.integration.service.output.DiscordOutputService;
+import com.donfaq.ruchi.integration.service.output.TelegramOutputService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -23,7 +24,10 @@ import static org.mockito.Mockito.when;
 public class BroadcastServiceImplTest {
 
     @MockBean
-    private DiscordOutputService outputService;
+    private DiscordOutputService discordOutputService;
+
+    @MockBean
+    private TelegramOutputService telegramOutputService;
 
     @MockBean
     private MessagesMemory memory;
@@ -41,10 +45,12 @@ public class BroadcastServiceImplTest {
 
         when(memory.contains(message)).thenReturn(false);
         broadcastService.broadcast(message);
-        Mockito.verify(outputService, times(1)).send(ArgumentMatchers.eq(message));
+        Mockito.verify(discordOutputService, times(1)).send(ArgumentMatchers.eq(message));
+        Mockito.verify(telegramOutputService, times(1)).send(ArgumentMatchers.eq(message));
 
         when(memory.contains(message)).thenReturn(true);
         broadcastService.broadcast(message);
-        Mockito.verifyZeroInteractions(outputService);
+        Mockito.verifyZeroInteractions(discordOutputService);
+        Mockito.verifyZeroInteractions(telegramOutputService);
     }
 }
