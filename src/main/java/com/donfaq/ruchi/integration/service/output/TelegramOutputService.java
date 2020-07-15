@@ -1,17 +1,22 @@
 package com.donfaq.ruchi.integration.service.output;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.vk.api.Image;
 import com.pengrad.telegrambot.Callback;
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.request.InputMediaPhoto;
 import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.request.SendMediaGroup;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
+import jdk.internal.util.xml.impl.Input;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URL;
 
 @Slf4j
 @Service
@@ -31,8 +36,7 @@ public class TelegramOutputService implements OutputService {
     @Override
     public void send(BroadcastMessage message) {
 
-
-        if (!message.getImages().isEmpty()) {
+        if (message.getImages() != null) {
             SendPhoto request = new SendPhoto(tgChannelId, message.getImages().get(0).toString())
                     .caption(message.getText());
 
