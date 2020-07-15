@@ -3,7 +3,8 @@ package com.donfaq.ruchi.integration.service.memory;
 import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class HashMapMessageMemoryTest {
     @Test
