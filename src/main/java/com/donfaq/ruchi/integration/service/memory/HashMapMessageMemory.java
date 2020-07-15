@@ -1,8 +1,7 @@
 package com.donfaq.ruchi.integration.service.memory;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
@@ -10,12 +9,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class HashMapMessageMemory implements MessagesMemory {
 
     private LinkedHashMap<Integer, String> memory;
     private static final int DEFAULT_SIZE = 5;
-    private static final Logger log = LoggerFactory.getLogger(HashMapMessageMemory.class);
     private int counter = 0;
 
     public HashMapMessageMemory() {

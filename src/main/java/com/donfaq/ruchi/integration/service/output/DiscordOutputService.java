@@ -1,6 +1,7 @@
 package com.donfaq.ruchi.integration.service.output;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -8,8 +9,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,10 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.LoginException;
 import java.net.URL;
 
+@Slf4j
 @Service
 public class DiscordOutputService implements OutputService {
-    private final Logger log = LoggerFactory.getLogger(DiscordOutputService.class);
-    private TextChannel textChannel;
+    private final TextChannel textChannel;
 
     @Autowired
     public DiscordOutputService(
