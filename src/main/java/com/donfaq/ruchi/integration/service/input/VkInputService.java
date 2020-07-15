@@ -7,8 +7,7 @@ import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
 import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,9 +21,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class VkInputService implements InputService {
-    private final Logger log = LoggerFactory.getLogger(VkInputService.class);
 
     @Value("${vk.confirmationCode}")
     private String confirmationCode;

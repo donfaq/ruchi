@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class InputController {
-    private VkInputService vkInputService;
+    private final VkInputService vkInputService;
 
     @Autowired
     public InputController(VkInputService vkInputService) {
