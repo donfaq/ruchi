@@ -35,7 +35,7 @@ public class TelegramOutputService implements OutputService {
             SendPhoto request = new SendPhoto(tgChannelId, message.getImages().get(0).toString())
                     .caption(message.getText());
 
-            bot.execute(request, new Callback<SendPhoto, SendResponse>() {
+            bot.execute(request, new Callback<>() {
                 @Override
                 public void onResponse(SendPhoto request, SendResponse response) {
                     log.info("Message sent to Telegram");
@@ -50,7 +50,7 @@ public class TelegramOutputService implements OutputService {
             SendMessage request = new SendMessage(tgChannelId, message.getText())
                     .parseMode(ParseMode.HTML)
                     .disableWebPagePreview(true);
-            bot.execute(request, new Callback<SendMessage, SendResponse>() {
+            bot.execute(request, new Callback<>() {
                 @Override
                 public void onResponse(SendMessage request, SendResponse response) {
                     log.info("Message sent to Telegram");

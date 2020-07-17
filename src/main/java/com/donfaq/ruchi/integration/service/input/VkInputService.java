@@ -31,14 +31,14 @@ public class VkInputService implements InputService {
     @Value("${vk.serviceAccessToken}")
     private String serviceAccessToken;
 
-    @Value("${TRIGGER_STRING}")
+    @Value("${vk.triggerString}")
     private String triggerString;
 
     private static final String VK_API_VERSION = "5.77";
     private static final String VK_BASE_URI = "https://api.vk.com/method/";
 
-    private RestTemplate restTemplate;
-    private BroadcastService broadcastService;
+    private final RestTemplate restTemplate;
+    private final BroadcastService broadcastService;
 
 
     @Autowired
@@ -120,10 +120,10 @@ public class VkInputService implements InputService {
         String uri = VK_BASE_URI + "photos.getById";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
-                .queryParam("v", VK_API_VERSION)
-                .queryParam("access_token", serviceAccessToken)
-                .queryParam("photos", photos)
-                .queryParam("photo_sizes", 1);
+                                                           .queryParam("v", VK_API_VERSION)
+                                                           .queryParam("access_token", serviceAccessToken)
+                                                           .queryParam("photos", photos)
+                                                           .queryParam("photo_sizes", 1);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -133,7 +133,7 @@ public class VkInputService implements InputService {
                 builder.toUriString(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<Map<String, List<Photo>>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
 
