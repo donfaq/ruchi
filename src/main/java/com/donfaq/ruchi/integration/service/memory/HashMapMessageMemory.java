@@ -26,7 +26,7 @@ public class HashMapMessageMemory implements MessagesMemory {
     }
 
     private void initMemory(int size) {
-        this.memory = new LinkedHashMap<Integer, String>() {
+        this.memory = new LinkedHashMap<>() {
             @Override
             protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
                 return this.size() > size;

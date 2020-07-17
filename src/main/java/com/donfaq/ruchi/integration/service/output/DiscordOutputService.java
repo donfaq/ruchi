@@ -2,7 +2,6 @@ package com.donfaq.ruchi.integration.service.output;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -27,10 +26,9 @@ public class DiscordOutputService implements OutputService {
             @Value("${discord.channelId}") final long channelId
     ) throws LoginException, InterruptedException {
         log.info("Connecting to Discord bot");
-        JDA jda = new JDABuilder(AccountType.BOT)
-                .setToken(botToken)
-                .build()
-                .awaitReady();
+        JDA jda = JDABuilder.createDefault(botToken)
+                            .build()
+                            .awaitReady();
 
         log.info("Trying to reach specified channel");
         textChannel = (TextChannel) jda.getGuildChannelById(ChannelType.TEXT, channelId);
