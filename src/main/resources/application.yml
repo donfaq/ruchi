@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8080}
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+app:
+  url: ${APP_URL}
+vk:
+  confirmationCode: ${VK_GROUP_CONFIRMATION_CODE}
+  serviceAccessToken: ${VK_SERVICE_ACCESS_TOKEN}
+  triggerString: ${VK_TRIGGER_STRING}
+discord:
+  botToken: ${DISCORD_BOT_TOKEN}
+  channelId: ${DISCORD_CHANNEL_ID}
+telegram:
+  botToken: ${TELEGRAM_BOT_TOKEN}
+  channelId: ${TELEGRAM_CHANNEL_ID}
+twitch:
+  userId: ${TWITCH_USER_ID}
+  clientId: ${TWITCH_CLIENT_ID}
+  clientSecret: ${TWITCH_CLIENT_SECRET}
+
+
+security:
+  oauth2:
+    client:
+      clientId: ${TWITCH_CLIENT_ID}
+      clientSecret: ${TWITCH_CLIENT_SECRET}
+      accessTokenUri: https://id.twitch.tv/oauth2/token
+      grantType: client_credentials
+      clientAuthenticationScheme: form

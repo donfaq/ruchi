@@ -7,10 +7,9 @@ import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
 import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class VkInputService implements InputService {
+@RequiredArgsConstructor
+public class VkInputService {
 
     @Value("${vk.confirmationCode}")
     private String confirmationCode;
@@ -39,13 +39,6 @@ public class VkInputService implements InputService {
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
-
-
-    @Autowired
-    public VkInputService(RestTemplateBuilder restTemplateBuilder, BroadcastService broadcastService) {
-        this.restTemplate = restTemplateBuilder.build();
-        this.broadcastService = broadcastService;
-    }
 
 
     public boolean isConfirmation(VkInputType callback) {
@@ -165,7 +158,6 @@ public class VkInputService implements InputService {
         }
     }
 
-    @Override
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";
