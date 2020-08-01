@@ -2,6 +2,7 @@ package com.donfaq.ruchi.integration.service.broadcast;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
+import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.donfaq.ruchi.integration.service.memory.MessagesMemory;
 import com.donfaq.ruchi.integration.service.output.DiscordOutputService;
@@ -12,11 +13,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class BroadcastServiceImplTest {
 
     @MockBean
@@ -27,6 +30,9 @@ public class BroadcastServiceImplTest {
 
     @MockBean
     private MessagesMemory memory;
+
+    @MockBean
+    private TwitchInputService twitchInputService;
 
     @MockBean
     private VkInputService vkInputService;
