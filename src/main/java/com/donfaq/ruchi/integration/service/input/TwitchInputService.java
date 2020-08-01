@@ -55,9 +55,9 @@ public class TwitchInputService {
         log.info("Successfully send Twitch webhook subscription request");
     }
 
-    public Object process(WebSubSubscriptionResponse response) {
+    public String process(WebSubSubscriptionResponse response) {
         log.info("Twitch response: {}", response.toString());
-        return null;
+        return response.getHubChallenge();
     }
 
 }

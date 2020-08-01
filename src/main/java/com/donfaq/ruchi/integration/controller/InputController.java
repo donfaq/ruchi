@@ -4,11 +4,11 @@ import com.donfaq.ruchi.integration.model.twitch.webhook.websub.WebSubSubscripti
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +22,9 @@ public class InputController {
     }
 
     @GetMapping("/twitch")
-    public Object twitchCallback(WebSubSubscriptionResponse response) {
+    public String twitchCallback(@RequestParam Map<String, String> requestParams) {
+        ObjectMapper mapper = new ObjectMapper();
+        WebSubSubscriptionResponse response = mapper.convertValue(requestParams, WebSubSubscriptionResponse.class);
         return this.twitchInputService.process(response);
     }
 }
