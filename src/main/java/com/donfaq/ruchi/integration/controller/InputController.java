@@ -5,6 +5,7 @@ import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,8 +21,8 @@ public class InputController {
         return this.vkInputService.process(callback);
     }
 
-    @PostMapping("/twitch")
-    public Object twitchCallback(@RequestBody WebSubSubscriptionResponse response) {
+    @GetMapping("/twitch")
+    public Object twitchCallback(WebSubSubscriptionResponse response) {
         return this.twitchInputService.process(response);
     }
 }
