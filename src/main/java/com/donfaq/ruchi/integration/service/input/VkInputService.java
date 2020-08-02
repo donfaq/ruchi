@@ -1,16 +1,15 @@
 package com.donfaq.ruchi.integration.service.input;
 
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import com.donfaq.ruchi.integration.model.InputType;
-import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
 import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class VkInputService implements InputService {
+@RequiredArgsConstructor
+public class VkInputService {
 
     @Value("${vk.confirmationCode}")
     private String confirmationCode;
@@ -39,13 +39,6 @@ public class VkInputService implements InputService {
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
-
-
-    @Autowired
-    public VkInputService(RestTemplateBuilder restTemplateBuilder, BroadcastService broadcastService) {
-        this.restTemplate = restTemplateBuilder.build();
-        this.broadcastService = broadcastService;
-    }
 
 
     public boolean isConfirmation(VkInputType callback) {
@@ -151,21 +144,20 @@ public class VkInputService implements InputService {
 
         if (wallpostText.contains(this.triggerString)) {
 
-            VkBroadcastMessage broadcastMessage = new VkBroadcastMessage();
-            broadcastMessage.setText(wallpostText);
+            BroadcastMessage message = new BroadcastMessage();
+            message.setText(wallpostText);
 
             if (isContainsPhotoAttachment(wallpost)) {
-                broadcastMessage.setImages(getPostImages(wallpost));
+                message.setImages(getPostImages(wallpost));
             }
 
-            broadcastService.broadcast(broadcastMessage);
+            broadcastService.broadcast(message, false);
 
         } else {
             log.info("Received VK wallpost doesn't contain trigger string");
         }
     }
 
-    @Override
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";

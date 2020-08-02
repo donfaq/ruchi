@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8080}
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+app:
+  url: ${APP_URL:https://test.com/}
+vk:
+  confirmationCode: code
+  serviceAccessToken: code
+  triggerString: code
+discord:
+  botToken: code
+  channelId: code
+telegram:
+  botToken: code
+  channelId: code
+twitch:
+  userLogin: code
+  clientId: code
+  clientSecret: code
+
+
+security:
+  oauth2:
+    client:
+      clientId: code
+      clientSecret: code
+      accessTokenUri: https://id.twitch.tv/oauth2/token
+      grantType: client_credentials
+      clientAuthenticationScheme: form

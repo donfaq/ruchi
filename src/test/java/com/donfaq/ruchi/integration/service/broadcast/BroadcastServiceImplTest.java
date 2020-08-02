@@ -1,7 +1,7 @@
 package com.donfaq.ruchi.integration.service.broadcast;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
-import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
+import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.donfaq.ruchi.integration.service.memory.MessagesMemory;
 import com.donfaq.ruchi.integration.service.output.DiscordOutputService;
@@ -12,11 +12,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class BroadcastServiceImplTest {
 
     @MockBean
@@ -29,6 +31,9 @@ public class BroadcastServiceImplTest {
     private MessagesMemory memory;
 
     @MockBean
+    private TwitchInputService twitchInputService;
+
+    @MockBean
     private VkInputService vkInputService;
 
     @Autowired
@@ -37,15 +42,15 @@ public class BroadcastServiceImplTest {
 
     @Test
     public void broadcast() {
-        BroadcastMessage message = new VkBroadcastMessage();
+        BroadcastMessage message = new BroadcastMessage();
 
         when(memory.contains(message)).thenReturn(false);
-        broadcastService.broadcast(message);
+        broadcastService.broadcast(message, false);
         Mockito.verify(discordOutputService, times(1)).send(ArgumentMatchers.eq(message));
         Mockito.verify(telegramOutputService, times(1)).send(ArgumentMatchers.eq(message));
 
         when(memory.contains(message)).thenReturn(true);
-        broadcastService.broadcast(message);
+        broadcastService.broadcast(message, false);
         Mockito.verifyNoMoreInteractions(discordOutputService);
         Mockito.verifyNoMoreInteractions(telegramOutputService);
     }
