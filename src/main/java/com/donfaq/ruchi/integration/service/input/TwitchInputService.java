@@ -131,10 +131,6 @@ public class TwitchInputService {
         log.info(body.toString());
         TwitchStream stream = body.getData().stream().findFirst().orElseThrow();
 
-        if (stream.getGameId() != null) {
-            log.info("Stream current game: {}", getGame(stream.getGameId()).orElseThrow().getName());
-        }
-
         BroadcastMessage message = new BroadcastMessage();
         message.setText("```" + stream.toString() + "```");
         broadcastService.broadcast(message);
