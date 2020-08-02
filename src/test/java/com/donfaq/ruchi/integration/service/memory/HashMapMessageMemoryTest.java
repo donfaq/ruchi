@@ -1,6 +1,6 @@
 package com.donfaq.ruchi.integration.service.memory;
 
-import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,7 +11,7 @@ public class HashMapMessageMemoryTest {
     public void testAddMessage() {
         MessagesMemory memory = new HashMapMessageMemory();
 
-        VkBroadcastMessage message = new VkBroadcastMessage();
+        BroadcastMessage message = new BroadcastMessage();
         message.setText("hello");
 
         assertFalse(memory.contains(message));
@@ -25,13 +25,12 @@ public class HashMapMessageMemoryTest {
     public void testMemorySize() {
         MessagesMemory memory = new HashMapMessageMemory(2);
 
-        VkBroadcastMessage message1 = new VkBroadcastMessage();
+        BroadcastMessage message1 = new BroadcastMessage();
         message1.setText("message1");
-        VkBroadcastMessage message2 = new VkBroadcastMessage();
+        BroadcastMessage message2 = new BroadcastMessage();
         message2.setText("message2");
-        VkBroadcastMessage message3 = new VkBroadcastMessage();
+        BroadcastMessage message3 = new BroadcastMessage();
         message3.setText("message3");
-
 
         memory.add(message1);
         memory.add(message2);

@@ -1,5 +1,7 @@
 package com.donfaq.ruchi.integration.controller;
 
+import com.donfaq.ruchi.integration.model.twitch.api.TwitchResponse;
+import com.donfaq.ruchi.integration.model.twitch.api.TwitchStream;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
@@ -26,5 +28,10 @@ public class InputController {
         ObjectMapper mapper = new ObjectMapper();
         WebSubSubscriptionResponse response = mapper.convertValue(requestParams, WebSubSubscriptionResponse.class);
         return this.twitchInputService.processWebhookSubscriptionResponse(response);
+    }
+
+    @PostMapping("/twitch")
+    public void twitchCallback(@RequestBody TwitchResponse<TwitchStream> body) {
+        this.twitchInputService.processWebhookNotification(body);
     }
 }

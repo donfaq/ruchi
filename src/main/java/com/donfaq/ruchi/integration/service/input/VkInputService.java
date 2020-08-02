@@ -1,7 +1,7 @@
 package com.donfaq.ruchi.integration.service.input;
 
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import com.donfaq.ruchi.integration.model.InputType;
-import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
@@ -144,14 +144,14 @@ public class VkInputService {
 
         if (wallpostText.contains(this.triggerString)) {
 
-            VkBroadcastMessage broadcastMessage = new VkBroadcastMessage();
-            broadcastMessage.setText(wallpostText);
+            BroadcastMessage message = new BroadcastMessage();
+            message.setText(wallpostText);
 
             if (isContainsPhotoAttachment(wallpost)) {
-                broadcastMessage.setImages(getPostImages(wallpost));
+                message.setImages(getPostImages(wallpost));
             }
 
-            broadcastService.broadcast(broadcastMessage);
+            broadcastService.broadcast(message);
 
         } else {
             log.info("Received VK wallpost doesn't contain trigger string");

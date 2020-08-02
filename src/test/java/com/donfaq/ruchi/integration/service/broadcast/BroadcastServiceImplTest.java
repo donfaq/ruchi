@@ -1,7 +1,6 @@
 package com.donfaq.ruchi.integration.service.broadcast;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
-import com.donfaq.ruchi.integration.model.vk.VkBroadcastMessage;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.donfaq.ruchi.integration.service.memory.MessagesMemory;
@@ -43,7 +42,7 @@ public class BroadcastServiceImplTest {
 
     @Test
     public void broadcast() {
-        BroadcastMessage message = new VkBroadcastMessage();
+        BroadcastMessage message = new BroadcastMessage();
 
         when(memory.contains(message)).thenReturn(false);
         broadcastService.broadcast(message);

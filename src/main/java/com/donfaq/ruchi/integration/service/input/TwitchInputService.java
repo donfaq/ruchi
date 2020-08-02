@@ -1,11 +1,11 @@
 package com.donfaq.ruchi.integration.service.input;
 
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchResponse;
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchUser;
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchWebhookSubscription;
+import com.donfaq.ruchi.integration.model.BroadcastMessage;
+import com.donfaq.ruchi.integration.model.twitch.api.*;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubHubMode;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionRequest;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
+import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +29,8 @@ public class TwitchInputService {
 
     private final @Qualifier("twitchOauth2RestTemplate")
     OAuth2RestOperations restTemplate;
+
+    private final BroadcastService broadcastService;
 
     @Value("${security.oauth2.client.clientId}")
     private String twitchClientId;
@@ -100,6 +102,19 @@ public class TwitchInputService {
         return response.getBody().getData().stream().findFirst();
     }
 
+    public Optional<TwitchGame> getGame(String gameId) {
+        log.info("Getting information from Twitch for gameId={}", gameId);
+        ResponseEntity<TwitchResponse<TwitchGame>> response = restTemplate.exchange(
+                "https://api.twitch.tv/helix/games?id={gameId}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<TwitchResponse<TwitchGame>>() {},
+                gameId
+        );
+        log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
+        return response.getBody().getData().stream().findFirst();
+    }
+
     public List<TwitchWebhookSubscription> getWebhookSubscriptions() {
         log.info("Getting Twitch webhook subscriptions");
         ResponseEntity<TwitchResponse<TwitchWebhookSubscription>> response = restTemplate.exchange(
@@ -112,4 +127,16 @@ public class TwitchInputService {
         return response.getBody().getData();
     }
 
+    public void processWebhookNotification(TwitchResponse<TwitchStream> body) {
+        log.info(body.toString());
+        TwitchStream stream = body.getData().stream().findFirst().orElseThrow();
+
+        if (stream.getGameId() != null) {
+            log.info("Stream current game: {}", getGame(stream.getGameId()).orElseThrow().getName());
+        }
+
+        BroadcastMessage message = new BroadcastMessage();
+        message.setText("```" + stream.toString() + "```");
+        broadcastService.broadcast(message);
+    }
 }
