@@ -16,7 +16,7 @@ telegram:
   botToken: ${TELEGRAM_BOT_TOKEN}
   channelId: ${TELEGRAM_CHANNEL_ID}
 twitch:
-  userId: ${TWITCH_USER_ID}
+  userLogin: ${TWITCH_USER_LOGIN}
   clientId: ${TWITCH_CLIENT_ID}
   clientSecret: ${TWITCH_CLIENT_SECRET}
 

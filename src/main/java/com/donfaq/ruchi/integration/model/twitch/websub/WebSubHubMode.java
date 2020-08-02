@@ -1,4 +1,4 @@
-package com.donfaq.ruchi.integration.model.twitch.webhook.websub;
+package com.donfaq.ruchi.integration.model.twitch.websub;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

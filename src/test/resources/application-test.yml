@@ -16,7 +16,7 @@ telegram:
   botToken: code
   channelId: code
 twitch:
-  userId: code
+  userLogin: code
   clientId: code
   clientSecret: code
 
