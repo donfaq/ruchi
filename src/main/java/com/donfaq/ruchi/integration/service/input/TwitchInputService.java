@@ -43,6 +43,8 @@ public class TwitchInputService {
 
     private TwitchUser twitchUser;
 
+    private Boolean isStreamOffline = Boolean.TRUE;
+
     @EventListener
     public void updateWebhookSubscription(ApplicationReadyEvent applicationReadyEvent) {
         log.info("Updating Twitch webhook subscriptions");
@@ -95,7 +97,8 @@ public class TwitchInputService {
                 "https://api.twitch.tv/helix/users?login={login}",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<TwitchResponse<TwitchUser>>() {},
+                new ParameterizedTypeReference<TwitchResponse<TwitchUser>>() {
+                },
                 login
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
@@ -108,7 +111,8 @@ public class TwitchInputService {
                 "https://api.twitch.tv/helix/games?id={gameId}",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<TwitchResponse<TwitchGame>>() {},
+                new ParameterizedTypeReference<TwitchResponse<TwitchGame>>() {
+                },
                 gameId
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
@@ -127,19 +131,38 @@ public class TwitchInputService {
         return response.getBody().getData();
     }
 
+
+    private String constructBroadcastMessage(TwitchResponse<TwitchStream> notification) {
+        String channelUrl = "https://www.twitch.tv/" + twitchUserLogin;
+        String messageText;
+
+        if (notification.getData().isEmpty()) {
+            isStreamOffline = Boolean.TRUE;
+            messageText = "Стрим закончился! Спасибо всем, кто пришёл :3";
+        } else {
+            TwitchStream stream = notification.getData().stream().findFirst().orElseThrow();
+            String gameName = "Just Chatting";
+            if (stream.getGameId() != null & !stream.getGameId().equals("")) {
+                gameName = getGame(stream.getGameId()).orElseThrow().getName();
+            }
+
+            if (gameName.equals("Just Chatting")) {
+                messageText = "Обкашливаем вопросики прямо сейчас: " + channelUrl;
+            } else if (isStreamOffline) {
+                messageText = "Стрим по " + gameName + " только что начался! Жду тебя туть: " + channelUrl;
+            } else {
+                messageText = "Теперь я стримлю " + gameName + ". Посмотреть можно прямо тут: " + channelUrl;
+            }
+            isStreamOffline = Boolean.FALSE;
+        }
+        return messageText;
+    }
+
+
     public void processWebhookNotification(TwitchResponse<TwitchStream> body) {
         log.info("Processing new notification from Twitch webhook: {}", body);
-
-        String messageText;
-        if (body.getData() == null) {
-            messageText = "Стрим ушёл в оффлайн! Всем пока";
-        } else {
-            TwitchStream stream = body.getData().stream().findFirst().orElseThrow();
-            messageText = "СТРИМ ЖИВОЙ, ЗАХОДИТЕ ```" + stream.toString() + "```";
-        }
-
         BroadcastMessage message = new BroadcastMessage();
-        message.setText(messageText);
-        broadcastService.broadcast(message);
+        message.setText(constructBroadcastMessage(body));
+        broadcastService.broadcast(message, true);
     }
 }

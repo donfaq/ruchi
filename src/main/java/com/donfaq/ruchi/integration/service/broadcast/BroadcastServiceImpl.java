@@ -22,8 +22,8 @@ public class BroadcastServiceImpl implements BroadcastService {
     }
 
     @Override
-    public void broadcast(BroadcastMessage message) {
-        if (this.memory.contains(message)) {
+    public void broadcast(BroadcastMessage message, Boolean ignoreMemory) {
+        if (this.memory.contains(message) & !ignoreMemory) {
             log.info("Received message that has already been processed");
             return;
         }

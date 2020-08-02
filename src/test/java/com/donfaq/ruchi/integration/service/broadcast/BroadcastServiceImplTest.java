@@ -45,12 +45,12 @@ public class BroadcastServiceImplTest {
         BroadcastMessage message = new BroadcastMessage();
 
         when(memory.contains(message)).thenReturn(false);
-        broadcastService.broadcast(message);
+        broadcastService.broadcast(message, false);
         Mockito.verify(discordOutputService, times(1)).send(ArgumentMatchers.eq(message));
         Mockito.verify(telegramOutputService, times(1)).send(ArgumentMatchers.eq(message));
 
         when(memory.contains(message)).thenReturn(true);
-        broadcastService.broadcast(message);
+        broadcastService.broadcast(message, false);
         Mockito.verifyNoMoreInteractions(discordOutputService);
         Mockito.verifyNoMoreInteractions(telegramOutputService);
     }

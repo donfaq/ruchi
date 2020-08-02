@@ -151,7 +151,7 @@ public class VkInputService {
                 message.setImages(getPostImages(wallpost));
             }
 
-            broadcastService.broadcast(message);
+            broadcastService.broadcast(message, false);
 
         } else {
             log.info("Received VK wallpost doesn't contain trigger string");
