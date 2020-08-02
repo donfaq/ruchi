@@ -128,11 +128,18 @@ public class TwitchInputService {
     }
 
     public void processWebhookNotification(TwitchResponse<TwitchStream> body) {
-        log.info(body.toString());
-        TwitchStream stream = body.getData().stream().findFirst().orElseThrow();
+        log.info("Processing new notification from Twitch webhook: {}", body);
+
+        String messageText;
+        if (body.getData() == null) {
+            messageText = "Стрим ушёл в оффлайн! Всем пока";
+        } else {
+            TwitchStream stream = body.getData().stream().findFirst().orElseThrow();
+            messageText = "СТРИМ ЖИВОЙ, ЗАХОДИТЕ ```" + stream.toString() + "```";
+        }
 
         BroadcastMessage message = new BroadcastMessage();
-        message.setText("```" + stream.toString() + "```");
+        message.setText(messageText);
         broadcastService.broadcast(message);
     }
 }
