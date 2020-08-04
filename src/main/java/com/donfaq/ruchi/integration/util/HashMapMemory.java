@@ -1,8 +1,6 @@
-package com.donfaq.ruchi.integration.service.memory;
+package com.donfaq.ruchi.integration.util;
 
-import com.donfaq.ruchi.integration.model.BroadcastMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,35 +8,34 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
-public class HashMapMessageMemory implements MessagesMemory {
+public class HashMapMemory {
 
-    private LinkedHashMap<Integer, String> memory;
+    private LinkedHashMap<Integer, Object> memory;
     private static final int DEFAULT_SIZE = 5;
     private int counter = 0;
 
-    public HashMapMessageMemory() {
+    public HashMapMemory() {
         initMemory(DEFAULT_SIZE);
     }
 
-    public HashMapMessageMemory(int size) {
+    public HashMapMemory(int size) {
         initMemory(size);
     }
 
     private void initMemory(int size) {
         this.memory = new LinkedHashMap<>() {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+            protected boolean removeEldestEntry(Map.Entry<Integer, Object> eldest) {
                 return this.size() > size;
             }
         };
     }
 
-    private String getMessageHash(BroadcastMessage message) {
+    private String getHash(Object obj) {
         String result = "";
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(message.toString().getBytes());
+            messageDigest.update(obj.toString().getBytes());
             result = new String(messageDigest.digest());
         } catch (NoSuchAlgorithmException e) {
             log.error("Wrong hashing method specified", e);
@@ -46,14 +43,13 @@ public class HashMapMessageMemory implements MessagesMemory {
         return result;
     }
 
-    @Override
-    public void add(BroadcastMessage message) {
-        memory.put(counter, getMessageHash(message));
+
+    public void add(Object obj) {
+        memory.put(counter, getHash(obj));
         counter++;
     }
 
-    @Override
-    public boolean contains(BroadcastMessage message) {
-        return memory.containsValue(getMessageHash(message));
+    public boolean contains(Object obj) {
+        return memory.containsValue(getHash(obj));
     }
 }

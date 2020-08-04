@@ -7,6 +7,7 @@ import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
 import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
+import com.donfaq.ruchi.integration.util.HashMapMemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ public class VkInputService {
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
+    private final HashMapMemory memory = new HashMapMemory(5);
 
 
     public boolean isConfirmation(VkInputType callback) {
@@ -151,12 +153,19 @@ public class VkInputService {
                 message.setImages(getPostImages(wallpost));
             }
 
-            broadcastService.broadcast(message, false);
+            if (this.memory.contains(message)) {
+                log.info("Received VK wallpost that has already been processed");
+                return;
+            }
+            this.memory.add(message);
+
+            broadcastService.broadcast(message);
 
         } else {
             log.info("Received VK wallpost doesn't contain trigger string");
         }
     }
+
 
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
