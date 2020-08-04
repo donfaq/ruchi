@@ -6,6 +6,7 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubHubMode;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionRequest;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
+import com.donfaq.ruchi.integration.util.HashMapMemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,8 @@ public class TwitchInputService {
     OAuth2RestOperations restTemplate;
 
     private final BroadcastService broadcastService;
+
+    private final HashMapMemory memory = new HashMapMemory(1);
 
     @Value("${security.oauth2.client.clientId}")
     private String twitchClientId;
@@ -163,6 +166,12 @@ public class TwitchInputService {
         log.info("Processing new notification from Twitch webhook: {}", body);
         BroadcastMessage message = new BroadcastMessage();
         message.setText(constructBroadcastMessage(body));
-        broadcastService.broadcast(message, true);
+
+        if (this.memory.contains(message)) {
+            log.info("Received VK wallpost that has already been processed");
+            return;
+        }
+        this.memory.add(message);
+        broadcastService.broadcast(message);
     }
 }
