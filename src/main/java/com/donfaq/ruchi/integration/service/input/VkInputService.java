@@ -40,7 +40,7 @@ public class VkInputService {
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
-    private final HashMapMemory memory = new HashMapMemory(5);
+    private final HashMapMemory memory = new HashMapMemory(1);
 
 
     public boolean isConfirmation(VkInputType callback) {
