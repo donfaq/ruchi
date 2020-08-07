@@ -1,34 +1,24 @@
 package com.donfaq.ruchi.integration.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @Slf4j
-public class HashMapMemory {
-
-    private LinkedHashMap<Integer, Object> memory;
+@Component
+public class BlockingMemory {
+    private final ArrayBlockingQueue<String> memory;
     private static final int DEFAULT_SIZE = 5;
-    private int counter = 0;
 
-    public HashMapMemory() {
-        initMemory(DEFAULT_SIZE);
+    public BlockingMemory() {
+        memory = new ArrayBlockingQueue<>(DEFAULT_SIZE);
     }
 
-    public HashMapMemory(int size) {
-        initMemory(size);
-    }
-
-    private void initMemory(int size) {
-        this.memory = new LinkedHashMap<>() {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<Integer, Object> eldest) {
-                return this.size() > size;
-            }
-        };
+    public BlockingMemory(int size) {
+        memory = new ArrayBlockingQueue<>(size);
     }
 
     private String getHash(Object obj) {
@@ -45,11 +35,13 @@ public class HashMapMemory {
 
 
     public void add(Object obj) {
-        memory.put(counter, getHash(obj));
-        counter++;
+        if (memory.remainingCapacity() == 0) {
+            memory.poll();
+        }
+        memory.add(getHash(obj));
     }
 
     public boolean contains(Object obj) {
-        return memory.containsValue(getHash(obj));
+        return memory.contains(getHash(obj));
     }
 }
