@@ -1,16 +1,15 @@
 package com.donfaq.ruchi.integration.util;
 
 import com.donfaq.ruchi.integration.model.BroadcastMessage;
-import com.donfaq.ruchi.integration.util.HashMapMemory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HashMapMemoryTest {
+public class BlockingMemoryTest {
     @Test
     public void testAddMessage() {
-        HashMapMemory memory = new HashMapMemory();
+        BlockingMemory memory = new BlockingMemory();
 
         BroadcastMessage message = new BroadcastMessage();
         message.setText("hello");
@@ -24,7 +23,7 @@ public class HashMapMemoryTest {
 
     @Test
     public void testMemorySize() {
-        HashMapMemory memory = new HashMapMemory(2);
+        BlockingMemory memory = new BlockingMemory(2);
 
         BroadcastMessage message1 = new BroadcastMessage();
         message1.setText("message1");

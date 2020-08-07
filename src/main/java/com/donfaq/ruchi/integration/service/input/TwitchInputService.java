@@ -6,7 +6,7 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubHubMode;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionRequest;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
-import com.donfaq.ruchi.integration.util.HashMapMemory;
+import com.donfaq.ruchi.integration.util.BlockingMemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +33,7 @@ public class TwitchInputService {
 
     private final BroadcastService broadcastService;
 
-    private final HashMapMemory memory = new HashMapMemory(1);
+    private final BlockingMemory memory;
 
     @Value("${security.oauth2.client.clientId}")
     private String twitchClientId;

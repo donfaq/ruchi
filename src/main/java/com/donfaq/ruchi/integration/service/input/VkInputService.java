@@ -7,7 +7,7 @@ import com.donfaq.ruchi.integration.model.vk.api.Photo;
 import com.donfaq.ruchi.integration.model.vk.api.PhotoSizes;
 import com.donfaq.ruchi.integration.model.vk.api.Wallpost;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
-import com.donfaq.ruchi.integration.util.HashMapMemory;
+import com.donfaq.ruchi.integration.util.BlockingMemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class VkInputService {
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
-    private final HashMapMemory memory = new HashMapMemory(1);
+    private final BlockingMemory memory;
 
 
     public boolean isConfirmation(VkInputType callback) {
