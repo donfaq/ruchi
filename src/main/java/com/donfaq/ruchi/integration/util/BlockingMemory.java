@@ -34,14 +34,14 @@ public class BlockingMemory {
     }
 
 
-    public void add(Object obj) {
+    public synchronized void add(Object obj) {
         if (memory.remainingCapacity() == 0) {
             memory.poll();
         }
         memory.add(getHash(obj));
     }
 
-    public boolean contains(Object obj) {
+    public synchronized boolean contains(Object obj) {
         return memory.contains(getHash(obj));
     }
 }
