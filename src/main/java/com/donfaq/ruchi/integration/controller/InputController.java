@@ -31,7 +31,8 @@ public class InputController {
     }
 
     @PostMapping("/twitch")
-    public void twitchCallback(@RequestBody TwitchResponse<TwitchStream> body) {
-        this.twitchInputService.processWebhookNotification(body);
+    public void twitchCallback(@RequestBody TwitchResponse<TwitchStream> body,
+                               @RequestHeader(value = "X-Hub-Signature") String signature) {
+        this.twitchInputService.processWebhookNotification(body, signature);
     }
 }

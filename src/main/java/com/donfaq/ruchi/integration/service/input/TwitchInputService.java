@@ -7,6 +7,7 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionReques
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
 import com.donfaq.ruchi.integration.util.BlockingMemory;
+import com.donfaq.ruchi.integration.util.TwitchSecretManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +35,8 @@ public class TwitchInputService {
     private final BroadcastService broadcastService;
 
     private final BlockingMemory memory;
+
+    private final TwitchSecretManager twitchSecretManager;
 
     @Value("${security.oauth2.client.clientId}")
     private String twitchClientId;
@@ -76,6 +79,7 @@ public class TwitchInputService {
         webSubSubscriptionRequest.setHubMode(mode);
         webSubSubscriptionRequest.setHubTopic(topic);
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
+        webSubSubscriptionRequest.setHubSecret(twitchSecretManager.generateNewSecret());
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                 "https://api.twitch.tv/helix/webhooks/hub", webSubSubscriptionRequest, String.class);
@@ -162,16 +166,20 @@ public class TwitchInputService {
     }
 
 
-    public void processWebhookNotification(TwitchResponse<TwitchStream> body) {
-        log.info("Processing new notification from Twitch webhook: {}", body);
+    public void processWebhookNotification(TwitchResponse<TwitchStream> body, String signature) {
+        log.info("Processing new notification from Twitch: {}", body);
         BroadcastMessage message = new BroadcastMessage();
         message.setText(constructBroadcastMessage(body));
 
-        if (this.memory.contains(message)) {
-            log.info("Received VK wallpost that has already been processed");
-            return;
+        if(twitchSecretManager.validateSignature(body, signature)) {
+            if (this.memory.contains(message)) {
+                log.info("Received Twitch notification that has already been processed: {}", body);
+                return;
+            }
+            this.memory.add(message);
+            broadcastService.broadcast(message);
+        } else {
+            log.warn("Twitch notification fails secret validation: {}", body);
         }
-        this.memory.add(message);
-        broadcastService.broadcast(message);
     }
 }
