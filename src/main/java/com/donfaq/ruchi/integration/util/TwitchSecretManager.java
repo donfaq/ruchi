@@ -30,11 +30,10 @@ public class TwitchSecretManager {
     }
 
     public synchronized String generateNewSecret() {
-        if (secret != null) {
-            return secret;
-        } else {
-            return String.valueOf(UUID.randomUUID());
+        if (secret == null) {
+            secret = String.valueOf(UUID.randomUUID());
         }
+        return secret;
     }
 
     @SneakyThrows
