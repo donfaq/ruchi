@@ -19,8 +19,6 @@ public class TwitchSecretManager {
 
     private String secret;
 
-    private final ObjectMapper objectMapper;
-
     @SneakyThrows
     private String createSignature(String secret, byte[] payload) {
         Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
@@ -37,7 +35,7 @@ public class TwitchSecretManager {
     }
 
     @SneakyThrows
-    public boolean validateSignature(TwitchResponse<TwitchStream> body, String signature) {
-        return createSignature(this.secret, objectMapper.writeValueAsBytes(body)).equals(signature);
+    public boolean validateSignature(String body, String signature) {
+        return createSignature(this.secret, body.getBytes()).equals(signature);
     }
 }

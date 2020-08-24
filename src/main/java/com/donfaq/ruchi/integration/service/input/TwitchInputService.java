@@ -166,12 +166,12 @@ public class TwitchInputService {
     }
 
 
-    public void processWebhookNotification(TwitchResponse<TwitchStream> body, String signature) {
+    public void processWebhookNotification(TwitchResponse<TwitchStream> body, String signature, String payload) {
         log.info("Processing new notification from Twitch: {}", body);
         BroadcastMessage message = new BroadcastMessage();
         message.setText(constructBroadcastMessage(body));
 
-        if(twitchSecretManager.validateSignature(body, signature)) {
+        if(twitchSecretManager.validateSignature(payload, signature)) {
             if (this.memory.contains(message)) {
                 log.info("Received Twitch notification that has already been processed: {}", body);
                 return;
