@@ -6,6 +6,8 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionRespon
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -17,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InputController {
     private final VkInputService vkInputService;
+    private final ObjectMapper objectMapper;
     private final TwitchInputService twitchInputService;
 
     @PostMapping("/vk")
@@ -32,9 +35,13 @@ public class InputController {
     }
 
     @PostMapping("/twitch")
-    public void twitchCallback(@RequestBody TwitchResponse<TwitchStream> body,
-                               @RequestBody HttpEntity<String> payload,
-                               @RequestHeader(value = "X-Hub-Signature") String signature) {
+    public void twitchCallback(
+            @RequestBody HttpEntity<String> payload,
+            @RequestHeader(value = "X-Hub-Signature") String signature
+    ) throws JsonProcessingException {
+        TwitchResponse<TwitchStream> body = objectMapper.readValue(
+                payload.getBody(),
+                new TypeReference<TwitchResponse<TwitchStream>>() {});
         this.twitchInputService.processWebhookNotification(body, signature, payload.getBody());
     }
 }

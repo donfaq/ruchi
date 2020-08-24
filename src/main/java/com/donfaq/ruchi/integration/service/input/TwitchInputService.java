@@ -79,7 +79,7 @@ public class TwitchInputService {
         webSubSubscriptionRequest.setHubMode(mode);
         webSubSubscriptionRequest.setHubTopic(topic);
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
-        webSubSubscriptionRequest.setHubSecret(twitchSecretManager.generateNewSecret());
+        webSubSubscriptionRequest.setHubSecret(twitchSecretManager.getSecret());
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                 "https://api.twitch.tv/helix/webhooks/hub", webSubSubscriptionRequest, String.class);

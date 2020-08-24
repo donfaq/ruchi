@@ -27,7 +27,7 @@ public class TwitchSecretManager {
         return Hex.encodeHexString(mac.doFinal(payload));
     }
 
-    public synchronized String generateNewSecret() {
+    public synchronized String getSecret() {
         if (secret == null) {
             secret = String.valueOf(UUID.randomUUID());
         }
