@@ -171,7 +171,7 @@ public class TwitchInputService {
         BroadcastMessage message = new BroadcastMessage();
         message.setText(constructBroadcastMessage(body));
 
-        if(twitchSecretManager.validateSignature(payload, signature)) {
+        if (twitchSecretManager.validateSignature(payload, signature)) {
             if (this.memory.contains(message)) {
                 log.info("Received Twitch notification that has already been processed: {}", body);
                 return;

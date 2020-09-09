@@ -1,0 +1,1 @@
+web: java -agentlib:jdwp=transport=dt_socket,server=y,address=9090,suspend=n -Dserver.port=$PORT $JAVA_OPTS -jar target/ruchi-integration-0.0.1-SNAPSHOT.jar

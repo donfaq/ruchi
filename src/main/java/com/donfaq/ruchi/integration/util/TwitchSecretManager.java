@@ -1,8 +1,5 @@
 package com.donfaq.ruchi.integration.util;
 
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchResponse;
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchStream;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
