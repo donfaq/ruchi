@@ -44,9 +44,6 @@ public class TwitchInputService {
 
     private final ObjectMapper objectMapper;
 
-//    @Value("${security.oauth2.client.clientId}")
-//    private String twitchClientId;
-
     @Value("${app.url}")
     private String appUrl;
 
@@ -192,7 +189,7 @@ public class TwitchInputService {
     }
 
     @SneakyThrows
-    public void processWebhookNotification(String signature, String payload) {
+    public ResponseEntity<String> processWebhookNotification(String signature, String payload) {
         log.info("Processing new notification from Twitch: {}", payload);
 
         if (validateSignature(payload, signature)) {
@@ -202,12 +199,14 @@ public class TwitchInputService {
 
             if (this.memory.contains(message)) {
                 log.info("Received Twitch notification that has already been processed: {}", body);
-                return;
+                return ResponseEntity.ok().build();
             }
             this.memory.add(message);
             broadcastService.broadcast(message);
         } else {
             log.warn("Twitch notification failed secret validation: {}", payload);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        return ResponseEntity.ok().build();
     }
 }

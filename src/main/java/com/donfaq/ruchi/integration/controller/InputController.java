@@ -6,6 +6,7 @@ import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -30,10 +31,10 @@ public class InputController {
     }
 
     @PostMapping("/twitch")
-    public void twitchCallback(
+    public ResponseEntity<String> twitchCallback(
             @RequestBody String payload,
             @RequestHeader(value = "X-Hub-Signature") String signature
     ) {
-        this.twitchInputService.processWebhookNotification(signature, payload);
+        return this.twitchInputService.processWebhookNotification(signature, payload);
     }
 }
