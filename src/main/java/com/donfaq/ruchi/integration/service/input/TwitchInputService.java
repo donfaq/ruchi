@@ -7,12 +7,13 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionReques
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
 import com.donfaq.ruchi.integration.util.BlockingMemory;
-import com.donfaq.ruchi.integration.util.TwitchSecretManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -24,8 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -38,8 +41,6 @@ public class TwitchInputService {
     private final BroadcastService broadcastService;
 
     private final BlockingMemory memory;
-
-    private final TwitchSecretManager twitchSecretManager;
 
     private final ObjectMapper objectMapper;
 
@@ -55,6 +56,15 @@ public class TwitchInputService {
     private TwitchUser twitchUser;
 
     private Boolean isStreamOffline = Boolean.TRUE;
+
+    private String subscriptionSecret;
+
+    private synchronized String getSubscriptionSecret() {
+        if (subscriptionSecret == null) {
+            subscriptionSecret = String.valueOf(UUID.randomUUID());
+        }
+        return subscriptionSecret;
+    }
 
     @EventListener
     public void updateWebhookSubscription(ApplicationReadyEvent applicationReadyEvent) {
@@ -84,7 +94,7 @@ public class TwitchInputService {
         webSubSubscriptionRequest.setHubMode(mode);
         webSubSubscriptionRequest.setHubTopic(topic);
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
-        webSubSubscriptionRequest.setHubSecret(twitchSecretManager.getSecret());
+        webSubSubscriptionRequest.setHubSecret(getSubscriptionSecret());
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                 "https://api.twitch.tv/helix/webhooks/hub", webSubSubscriptionRequest, String.class);
@@ -170,12 +180,22 @@ public class TwitchInputService {
         return messageText;
     }
 
+    @SneakyThrows
+    public boolean validateSignature(String payload, String signature) {
+        String computed = String.format(
+                "sha256=%s",
+                new HmacUtils(HmacAlgorithms.HMAC_SHA_256, getSubscriptionSecret()).hmacHex(payload)
+        );
+
+        log.info("Validating signature. Computed='{}'. Received='{}'", computed, signature);
+        return MessageDigest.isEqual(signature.getBytes(), computed.getBytes());
+    }
 
     @SneakyThrows
     public void processWebhookNotification(String signature, String payload) {
         log.info("Processing new notification from Twitch: {}", payload);
 
-        if (twitchSecretManager.validateSignature(payload, signature)) {
+        if (validateSignature(payload, signature)) {
             TwitchResponse<TwitchStream> body = objectMapper.readValue(payload, new TypeReference<TwitchResponse<TwitchStream>>() {});
             BroadcastMessage message = new BroadcastMessage();
             message.setText(constructBroadcastMessage(body));
