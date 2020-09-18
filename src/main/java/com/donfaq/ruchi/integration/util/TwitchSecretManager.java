@@ -2,27 +2,20 @@ package com.donfaq.ruchi.integration.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Hex;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TwitchSecretManager {
-    public static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
-
     private String secret;
 
-    @SneakyThrows
-    private String createSignature(String secret, byte[] payload) {
-        Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
-        SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), HMAC_SHA256_ALGORITHM);
-        mac.init(signingKey);
-        return Hex.encodeHexString(mac.doFinal(payload));
-    }
 
     public synchronized String getSecret() {
         if (secret == null) {
@@ -32,7 +25,9 @@ public class TwitchSecretManager {
     }
 
     @SneakyThrows
-    public boolean validateSignature(String body, String signature) {
-        return createSignature(this.secret, body.getBytes()).equals(signature);
+    public boolean validateSignature(String payload, String signature) {
+        String computed = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, secret).hmacHex(payload);
+        log.info("Validating signature. Computed='{}'. Received='{}'", computed, signature);
+        return MessageDigest.isEqual(signature.getBytes(), computed.getBytes());
     }
 }
