@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InputController {
     private final VkInputService vkInputService;
-    private final ObjectMapper objectMapper;
+
     private final TwitchInputService twitchInputService;
 
     @PostMapping("/vk")
@@ -39,9 +39,6 @@ public class InputController {
             @RequestBody HttpEntity<String> payload,
             @RequestHeader(value = "X-Hub-Signature") String signature
     ) throws JsonProcessingException {
-        TwitchResponse<TwitchStream> body = objectMapper.readValue(
-                payload.getBody(),
-                new TypeReference<TwitchResponse<TwitchStream>>() {});
-        this.twitchInputService.processWebhookNotification(body, signature, payload.getBody());
+        this.twitchInputService.processWebhookNotification(signature, payload.getBody());
     }
 }
