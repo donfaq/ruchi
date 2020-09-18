@@ -44,8 +44,8 @@ public class TwitchInputService {
 
     private final ObjectMapper objectMapper;
 
-    @Value("${security.oauth2.client.clientId}")
-    private String twitchClientId;
+//    @Value("${security.oauth2.client.clientId}")
+//    private String twitchClientId;
 
     @Value("${app.url}")
     private String appUrl;
