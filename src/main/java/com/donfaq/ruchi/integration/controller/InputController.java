@@ -36,9 +36,9 @@ public class InputController {
 
     @PostMapping("/twitch")
     public void twitchCallback(
-            @RequestBody HttpEntity<String> payload,
+            @RequestBody String payload,
             @RequestHeader(value = "X-Hub-Signature") String signature
-    ) throws JsonProcessingException {
-        this.twitchInputService.processWebhookNotification(signature, payload.getBody());
+    ){
+        this.twitchInputService.processWebhookNotification(signature, payload);
     }
 }
