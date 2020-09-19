@@ -19,6 +19,7 @@ twitch:
   userLogin: ${TWITCH_USER_LOGIN}
   clientId: ${TWITCH_CLIENT_ID}
   clientSecret: ${TWITCH_CLIENT_SECRET}
+  pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
 
 
 security:

@@ -1,13 +1,12 @@
 package com.donfaq.ruchi.integration.controller;
 
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchResponse;
-import com.donfaq.ruchi.integration.model.twitch.api.TwitchStream;
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InputController {
     private final VkInputService vkInputService;
+
     private final TwitchInputService twitchInputService;
 
     @PostMapping("/vk")
@@ -31,7 +31,10 @@ public class InputController {
     }
 
     @PostMapping("/twitch")
-    public void twitchCallback(@RequestBody TwitchResponse<TwitchStream> body) {
-        this.twitchInputService.processWebhookNotification(body);
+    public ResponseEntity<String> twitchCallback(
+            @RequestBody String payload,
+            @RequestHeader(value = "X-Hub-Signature") String signature
+    ) {
+        return this.twitchInputService.processWebhookNotification(signature, payload);
     }
 }

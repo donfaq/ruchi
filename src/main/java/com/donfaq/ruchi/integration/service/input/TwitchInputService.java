@@ -7,12 +7,15 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionReques
 import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.integration.service.broadcast.BroadcastService;
 import com.donfaq.ruchi.integration.util.BlockingMemory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -20,8 +23,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.security.MessageDigest;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,25 +44,38 @@ public class TwitchInputService {
 
     private final BlockingMemory memory;
 
-    @Value("${security.oauth2.client.clientId}")
-    private String twitchClientId;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.url}")
-    private String appUrl;
+    private String HEROKU_APP_URL;
 
     @Value("${twitch.userLogin}")
-    private String twitchUserLogin;
+    private String TWITCH_USER_LOGIN;
+
+    @Value("${twitch.pauseBetweenNotifications}")
+    private long PAUSE_BETWEEN_NOTIFICATIONS;
 
     private TwitchUser twitchUser;
 
     private Boolean isStreamOffline = Boolean.TRUE;
 
-    @EventListener
-    public void updateWebhookSubscription(ApplicationReadyEvent applicationReadyEvent) {
+    private String subscriptionSecret;
+
+    private Instant lastNotificationTime;
+
+    private synchronized String getSubscriptionSecret() {
+        if (subscriptionSecret == null) {
+            subscriptionSecret = String.valueOf(UUID.randomUUID());
+        }
+        return subscriptionSecret;
+    }
+
+    @PostConstruct
+    public void updateWebhookSubscription() {
         log.info("Updating Twitch webhook subscriptions");
 
         if (this.twitchUser == null) {
-            this.twitchUser = getUsers(this.twitchUserLogin).orElseThrow();
+            this.twitchUser = getUsers(this.TWITCH_USER_LOGIN).orElseThrow();
         }
 
         getWebhookSubscriptions()
@@ -72,10 +94,11 @@ public class TwitchInputService {
     private void sendWebhookSubscriptionRequest(WebSubHubMode mode, String topic) {
         log.info("Sending Twitch webhook subscription request. Mode: {}; Topic: {};", mode, topic);
         WebSubSubscriptionRequest webSubSubscriptionRequest = new WebSubSubscriptionRequest();
-        webSubSubscriptionRequest.setHubCallback(appUrl + "/twitch");
+        webSubSubscriptionRequest.setHubCallback(HEROKU_APP_URL + "/twitch");
         webSubSubscriptionRequest.setHubMode(mode);
         webSubSubscriptionRequest.setHubTopic(topic);
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
+        webSubSubscriptionRequest.setHubSecret(getSubscriptionSecret());
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                 "https://api.twitch.tv/helix/webhooks/hub", webSubSubscriptionRequest, String.class);
@@ -105,7 +128,7 @@ public class TwitchInputService {
                 login
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
-        return response.getBody().getData().stream().findFirst();
+        return Objects.requireNonNull(response.getBody()).getData().stream().findFirst();
     }
 
     public Optional<TwitchGame> getGame(String gameId) {
@@ -119,7 +142,7 @@ public class TwitchInputService {
                 gameId
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
-        return response.getBody().getData().stream().findFirst();
+        return Objects.requireNonNull(response.getBody()).getData().stream().findFirst();
     }
 
     public List<TwitchWebhookSubscription> getWebhookSubscriptions() {
@@ -131,12 +154,12 @@ public class TwitchInputService {
                 new ParameterizedTypeReference<TwitchResponse<TwitchWebhookSubscription>>() {
                 }
         );
-        return response.getBody().getData();
+        return Objects.requireNonNull(response.getBody()).getData();
     }
 
 
     private String constructBroadcastMessage(TwitchResponse<TwitchStream> notification) {
-        String channelUrl = "https://www.twitch.tv/" + twitchUserLogin;
+        String channelUrl = "https://www.twitch.tv/" + TWITCH_USER_LOGIN;
         String messageText;
 
         if (notification.getData().isEmpty()) {
@@ -145,7 +168,8 @@ public class TwitchInputService {
         } else {
             TwitchStream stream = notification.getData().stream().findFirst().orElseThrow();
             String gameName = "Just Chatting";
-            if (stream.getGameId() != null & !stream.getGameId().equals("")) {
+
+            if (stream.getGameId() != null & !"".equals(stream.getGameId())) {
                 gameName = getGame(stream.getGameId()).orElseThrow().getName();
             }
 
@@ -161,17 +185,52 @@ public class TwitchInputService {
         return messageText;
     }
 
+    /**
+     * Check that received request signature equals computed value
+     *
+     * @param payload   Request body as string
+     * @param signature X-Hub-Signature header from POST request
+     * @return true, if received signature is valid
+     */
+    @SneakyThrows
+    public boolean validateSignature(String payload, String signature) {
+        String computed = String.format(
+                "sha256=%s",
+                new HmacUtils(HmacAlgorithms.HMAC_SHA_256, getSubscriptionSecret()).hmacHex(payload)
+        );
 
-    public void processWebhookNotification(TwitchResponse<TwitchStream> body) {
-        log.info("Processing new notification from Twitch webhook: {}", body);
-        BroadcastMessage message = new BroadcastMessage();
-        message.setText(constructBroadcastMessage(body));
+        log.info("Validating signature. Computed='{}'. Received='{}'", computed, signature);
+        return MessageDigest.isEqual(signature.getBytes(), computed.getBytes());
+    }
 
-        if (this.memory.contains(message)) {
-            log.info("Received VK wallpost that has already been processed");
-            return;
+    @SneakyThrows
+    public ResponseEntity<String> processWebhookNotification(String signature, String payload) {
+        log.info("Processing new notification from Twitch: {}", payload);
+
+        if (checkTimePolicy()) {
+            TwitchResponse<TwitchStream> body = objectMapper.readValue(
+                    payload, new TypeReference<TwitchResponse<TwitchStream>>() {});
+            BroadcastMessage message = new BroadcastMessage();
+            message.setText(constructBroadcastMessage(body));
+
+            if (this.memory.contains(message)) {
+                log.info("Received Twitch notification that has already been processed: {}", body);
+                return ResponseEntity.ok().build();
+            }
+            this.memory.add(message);
+            this.lastNotificationTime = Instant.now();
+            broadcastService.broadcast(message);
+        } else {
+            log.warn("Twitch notification failed time policy check. Skipping.");
+            return ResponseEntity.ok().build();
         }
-        this.memory.add(message);
-        broadcastService.broadcast(message);
+        return ResponseEntity.ok().build();
+    }
+
+    private boolean checkTimePolicy() {
+        Instant now = Instant.now();
+        log.info("Checking time policy at {}. Previous notification at {}", now, this.lastNotificationTime);
+        if (this.lastNotificationTime == null) return true;
+        return ChronoUnit.MINUTES.between(this.lastNotificationTime, now) > PAUSE_BETWEEN_NOTIFICATIONS;
     }
 }
