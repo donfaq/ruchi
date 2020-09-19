@@ -16,8 +16,6 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,8 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,8 +63,8 @@ public class TwitchInputService {
         return subscriptionSecret;
     }
 
-    @EventListener
-    public void updateWebhookSubscription(ApplicationReadyEvent applicationReadyEvent) {
+    @PostConstruct
+    public void updateWebhookSubscription() {
         log.info("Updating Twitch webhook subscriptions");
 
         if (this.twitchUser == null) {
@@ -121,7 +121,7 @@ public class TwitchInputService {
                 login
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
-        return response.getBody().getData().stream().findFirst();
+        return Objects.requireNonNull(response.getBody()).getData().stream().findFirst();
     }
 
     public Optional<TwitchGame> getGame(String gameId) {
@@ -135,7 +135,7 @@ public class TwitchInputService {
                 gameId
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
-        return response.getBody().getData().stream().findFirst();
+        return Objects.requireNonNull(response.getBody()).getData().stream().findFirst();
     }
 
     public List<TwitchWebhookSubscription> getWebhookSubscriptions() {
@@ -147,7 +147,7 @@ public class TwitchInputService {
                 new ParameterizedTypeReference<TwitchResponse<TwitchWebhookSubscription>>() {
                 }
         );
-        return response.getBody().getData();
+        return Objects.requireNonNull(response.getBody()).getData();
     }
 
 
@@ -161,7 +161,8 @@ public class TwitchInputService {
         } else {
             TwitchStream stream = notification.getData().stream().findFirst().orElseThrow();
             String gameName = "Just Chatting";
-            if (stream.getGameId() != null & !stream.getGameId().equals("")) {
+
+            if (stream.getGameId() != null & !"".equals(stream.getGameId())) {
                 gameName = getGame(stream.getGameId()).orElseThrow().getName();
             }
 
@@ -193,7 +194,8 @@ public class TwitchInputService {
         log.info("Processing new notification from Twitch: {}", payload);
 
         if (validateSignature(payload, signature)) {
-            TwitchResponse<TwitchStream> body = objectMapper.readValue(payload, new TypeReference<TwitchResponse<TwitchStream>>() {});
+            TwitchResponse<TwitchStream> body = objectMapper.readValue(
+                    payload, new TypeReference<TwitchResponse<TwitchStream>>() {});
             BroadcastMessage message = new BroadcastMessage();
             message.setText(constructBroadcastMessage(body));
 
@@ -204,7 +206,7 @@ public class TwitchInputService {
             this.memory.add(message);
             broadcastService.broadcast(message);
         } else {
-            log.warn("Twitch notification failed secret validation: {}", payload);
+            log.warn("Twitch notification failed secret validation. Skipping");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.ok().build();
