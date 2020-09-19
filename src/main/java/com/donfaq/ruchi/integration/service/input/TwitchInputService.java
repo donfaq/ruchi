@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,16 +47,21 @@ public class TwitchInputService {
     private final ObjectMapper objectMapper;
 
     @Value("${app.url}")
-    private String appUrl;
+    private String HEROKU_APP_URL;
 
     @Value("${twitch.userLogin}")
-    private String twitchUserLogin;
+    private String TWITCH_USER_LOGIN;
+
+    @Value("${twitch.pauseBetweenNotifications}")
+    private long PAUSE_BETWEEN_NOTIFICATIONS;
 
     private TwitchUser twitchUser;
 
     private Boolean isStreamOffline = Boolean.TRUE;
 
     private String subscriptionSecret;
+
+    private Instant lastNotificationTime;
 
     private synchronized String getSubscriptionSecret() {
         if (subscriptionSecret == null) {
@@ -68,7 +75,7 @@ public class TwitchInputService {
         log.info("Updating Twitch webhook subscriptions");
 
         if (this.twitchUser == null) {
-            this.twitchUser = getUsers(this.twitchUserLogin).orElseThrow();
+            this.twitchUser = getUsers(this.TWITCH_USER_LOGIN).orElseThrow();
         }
 
         getWebhookSubscriptions()
@@ -87,7 +94,7 @@ public class TwitchInputService {
     private void sendWebhookSubscriptionRequest(WebSubHubMode mode, String topic) {
         log.info("Sending Twitch webhook subscription request. Mode: {}; Topic: {};", mode, topic);
         WebSubSubscriptionRequest webSubSubscriptionRequest = new WebSubSubscriptionRequest();
-        webSubSubscriptionRequest.setHubCallback(appUrl + "/twitch");
+        webSubSubscriptionRequest.setHubCallback(HEROKU_APP_URL + "/twitch");
         webSubSubscriptionRequest.setHubMode(mode);
         webSubSubscriptionRequest.setHubTopic(topic);
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
@@ -152,7 +159,7 @@ public class TwitchInputService {
 
 
     private String constructBroadcastMessage(TwitchResponse<TwitchStream> notification) {
-        String channelUrl = "https://www.twitch.tv/" + twitchUserLogin;
+        String channelUrl = "https://www.twitch.tv/" + TWITCH_USER_LOGIN;
         String messageText;
 
         if (notification.getData().isEmpty()) {
@@ -178,6 +185,13 @@ public class TwitchInputService {
         return messageText;
     }
 
+    /**
+     * Check that received request signature equals computed value
+     *
+     * @param payload   Request body as string
+     * @param signature X-Hub-Signature header from POST request
+     * @return true, if received signature is valid
+     */
     @SneakyThrows
     public boolean validateSignature(String payload, String signature) {
         String computed = String.format(
@@ -193,7 +207,7 @@ public class TwitchInputService {
     public ResponseEntity<String> processWebhookNotification(String signature, String payload) {
         log.info("Processing new notification from Twitch: {}", payload);
 
-        if (validateSignature(payload, signature)) {
+        if (checkTimePolicy()) {
             TwitchResponse<TwitchStream> body = objectMapper.readValue(
                     payload, new TypeReference<TwitchResponse<TwitchStream>>() {});
             BroadcastMessage message = new BroadcastMessage();
@@ -204,11 +218,19 @@ public class TwitchInputService {
                 return ResponseEntity.ok().build();
             }
             this.memory.add(message);
+            this.lastNotificationTime = Instant.now();
             broadcastService.broadcast(message);
         } else {
-            log.warn("Twitch notification failed secret validation. Skipping");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            log.warn("Twitch notification failed time policy check. Skipping.");
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    private boolean checkTimePolicy() {
+        Instant now = Instant.now();
+        log.info("Checking time policy at {}. Previous notification at {}", now, this.lastNotificationTime);
+        if (this.lastNotificationTime == null) return true;
+        return ChronoUnit.MINUTES.between(this.lastNotificationTime, now) > PAUSE_BETWEEN_NOTIFICATIONS;
     }
 }
