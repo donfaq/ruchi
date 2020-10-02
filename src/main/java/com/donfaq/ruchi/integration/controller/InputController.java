@@ -6,11 +6,13 @@ import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class InputController {
@@ -19,8 +21,8 @@ public class InputController {
     private final TwitchInputService twitchInputService;
 
     @PostMapping("/vk")
-    public Object vkCallback(@RequestBody VkInputType callback) {
-        return this.vkInputService.process(callback);
+    public String vkCallback(@RequestBody VkInputType callbackMessage) {
+        return this.vkInputService.process(callbackMessage);
     }
 
     @GetMapping("/twitch")

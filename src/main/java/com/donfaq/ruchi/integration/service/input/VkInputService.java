@@ -35,21 +35,12 @@ public class VkInputService {
     @Value("${vk.triggerString}")
     private String triggerString;
 
-    private static final String VK_API_VERSION = "5.77";
+    private static final String VK_API_VERSION = "5.124";
     private static final String VK_BASE_URI = "https://api.vk.com/method/";
 
     private final RestTemplate restTemplate;
     private final BroadcastService broadcastService;
     private final BlockingMemory memory;
-
-
-    public boolean isConfirmation(VkInputType callback) {
-        return "confirmation".equals(callback.getType());
-    }
-
-    private boolean isContainsText(Wallpost wallpost) {
-        return !"".equals(wallpost.getText()) && wallpost.getText() != null;
-    }
 
     private boolean isContainsPhotoAttachment(Wallpost wallpost) {
         boolean result = false;
@@ -104,7 +95,7 @@ public class VkInputService {
         log.info("Extracting message text from callback");
         String text = "";
 
-        if (isContainsText(wallpost)) {
+        if (!"".equals(wallpost.getText()) && wallpost.getText() != null) {
             text += wallpost.getText();
         }
 
@@ -170,10 +161,10 @@ public class VkInputService {
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";
-        if (isConfirmation(callback)) {
+        if ("confirmation".equals(callback.getType())) {
             log.info("Confirmation request");
             result = this.confirmationCode;
-        } else {
+        } else if ("wall_post_new".equals(callback.getType())) {
             log.info("Processing new wallpost");
             processNewWallpost(callback.getObject());
         }
