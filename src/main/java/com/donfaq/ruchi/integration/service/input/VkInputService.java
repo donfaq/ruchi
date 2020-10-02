@@ -174,7 +174,7 @@ public class VkInputService {
             log.info("Confirmation request");
             result = this.confirmationCode;
         } else {
-            log.info("Processing new wallpost");
+            log.info("Processing new wallpost: {}", inputMessage);
             processNewWallpost(callback.getObject());
         }
         return result;
