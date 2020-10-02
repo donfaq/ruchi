@@ -43,10 +43,6 @@ public class VkInputService {
     private final BlockingMemory memory;
 
 
-    public boolean isConfirmation(VkInputType callback) {
-        return "confirmation".equals(callback.getType());
-    }
-
     private boolean isContainsText(Wallpost wallpost) {
         return !"".equals(wallpost.getText()) && wallpost.getText() != null;
     }
@@ -170,7 +166,7 @@ public class VkInputService {
     public String process(InputType inputMessage) {
         VkInputType callback = (VkInputType) inputMessage;
         String result = "ok";
-        if (isConfirmation(callback)) {
+        if ("confirmation".equals(callback.getType())) {
             log.info("Confirmation request");
             result = this.confirmationCode;
         } else {
