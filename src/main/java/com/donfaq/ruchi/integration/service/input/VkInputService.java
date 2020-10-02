@@ -35,7 +35,7 @@ public class VkInputService {
     @Value("${vk.triggerString}")
     private String triggerString;
 
-    private static final String VK_API_VERSION = "5.77";
+    private static final String VK_API_VERSION = "5.124";
     private static final String VK_BASE_URI = "https://api.vk.com/method/";
 
     private final RestTemplate restTemplate;
