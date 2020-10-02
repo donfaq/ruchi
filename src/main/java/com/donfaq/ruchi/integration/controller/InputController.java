@@ -4,7 +4,6 @@ import com.donfaq.ruchi.integration.model.twitch.websub.WebSubSubscriptionRespon
 import com.donfaq.ruchi.integration.model.vk.VkInputType;
 import com.donfaq.ruchi.integration.service.input.TwitchInputService;
 import com.donfaq.ruchi.integration.service.input.VkInputService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +21,8 @@ public class InputController {
     private final TwitchInputService twitchInputService;
 
     @PostMapping("/vk")
-    public Object vkCallback(@RequestBody String body) throws JsonProcessingException {
-        log.info("New vk callback received: {}", body);
-        ObjectMapper mapper = new ObjectMapper();
-        return this.vkInputService.process(mapper.readValue(body, VkInputType.class));
+    public String vkCallback(@RequestBody VkInputType callbackMessage) {
+        return this.vkInputService.process(callbackMessage);
     }
 
     @GetMapping("/twitch")

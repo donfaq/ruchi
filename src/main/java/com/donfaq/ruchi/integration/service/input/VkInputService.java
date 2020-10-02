@@ -42,11 +42,6 @@ public class VkInputService {
     private final BroadcastService broadcastService;
     private final BlockingMemory memory;
 
-
-    private boolean isContainsText(Wallpost wallpost) {
-        return !"".equals(wallpost.getText()) && wallpost.getText() != null;
-    }
-
     private boolean isContainsPhotoAttachment(Wallpost wallpost) {
         boolean result = false;
 
@@ -100,7 +95,7 @@ public class VkInputService {
         log.info("Extracting message text from callback");
         String text = "";
 
-        if (isContainsText(wallpost)) {
+        if (!"".equals(wallpost.getText()) && wallpost.getText() != null) {
             text += wallpost.getText();
         }
 
@@ -169,8 +164,8 @@ public class VkInputService {
         if ("confirmation".equals(callback.getType())) {
             log.info("Confirmation request");
             result = this.confirmationCode;
-        } else {
-            log.info("Processing new wallpost: {}", inputMessage);
+        } else if ("wall_post_new".equals(callback.getType())) {
+            log.info("Processing new wallpost");
             processNewWallpost(callback.getObject());
         }
         return result;
