@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<div th:replace="fragments/general.html :: headerfiles"></div>
+
+<body>
+<div class="d-flex" id="wrapper">
+    <div th:replace="fragments/general.html :: sidebar"></div>
+    <iframe style="width: 100%; border:0" th:src="${@environment.getProperty('GOOGLE_IFRAME_URL')}"></iframe>
+</div>
+</body>
+
+</html>

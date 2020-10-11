@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<div th:replace="fragments/general.html :: headerfiles"></div>
+
+<body>
+<div class="d-flex" id="wrapper">
+    <div th:replace="fragments/general.html :: sidebar"></div>
+    <div id="page-content-wrapper">
+        <div th:replace="fragments/general.html :: about"></div>
+    </div>
+</div>
+</body>
+
+</html>

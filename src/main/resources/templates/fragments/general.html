@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:fragment="headerfiles">
+    <title>RuChi's BudHole</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link th:href="@{/webjars/bootstrap/4.5.0/css/bootstrap.min.css}" rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/simple-sidebar.css}" rel="stylesheet"/>
+</head>
+
+<div th:fragment="sidebar" class="bg-light border-right" id="sidebar-wrapper">
+    <div class="sidebar-heading">RuChi's BudHole</div>
+    <div class="list-group list-group-flush">
+        <a th:href="@{about}" class="list-group-item list-group-item-action"
+           th:classappend="${#request.requestURI == '/about' ? 'active':'bg-light'}">Обо мне</a>
+        <a th:href="@{bot}" class="list-group-item list-group-item-action"
+           th:classappend="${#request.requestURI == '/bot' ? 'active':'bg-light'}">Описание бота</a>
+        <a th:href="@{games}" class="list-group-item list-group-item-action"
+           th:classappend="${#request.requestURI == '/games' ? 'active':'bg-light'}">Список игр</a>
+    </div>
+</div>
+
+<div th:fragment="script">
+    <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.5.0/js/bootstrap.bundle.min.js}"></script>
+</div>
+
+<div th:fragment="bot" class="container-fluid">
+    <table class="table table-bordered" id="bot-description-table">
+        <thead>
+        <tr>
+            <th scope="col">Команда бота</th>
+            <th scope="col">Описание</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>!help</code></td>
+            <td>
+                Справочное сообщение
+            </td>
+        </tr>
+        <tr>
+            <td><code>!info</code></td>
+            <td>Важная информация о стриме</td>
+        </tr>
+        <tr>
+            <td><code>!speak [СЛОВО]</code></td>
+            <td>
+                Генерирует сообщение на основе предыдущей истории чата. Можно задать первое слово, если в
+                истории, сообшений с таким словом было недостаточно для генерации, то оно будет проигнорировано.
+            </td>
+        </tr>
+        <tr>
+            <td><code>!joke</code></td>
+            <td>Подтягивает одну из последних шуток с сайта anekdot.ru</td>
+        </tr>
+        <tr>
+            <td><code>!news</code></td>
+            <td>Случайная новость с сайта breakingmad.me</td>
+        </tr>
+        <tr>
+            <td><code>!connect</code> / <code>!butt</code></td>
+            <td>Бот объединяет одинокие сердца!</td>
+        </tr>
+        <tr>
+            <td><code>!spank</code> / <code>!slap</code> / <code>!шлепок</code></td>
+            <td>GO TO HORNY JAIL! <span class="badge badge-danger">BONK!</span></td>
+        </tr>
+        <tr>
+            <td><code>!кря</code></td>
+            <td>Вот это ты зря</td>
+        </tr>
+        <tr>
+            <td><code>!ping</code> / <code>!pong</code></td>
+            <td>Команда для проверки, что бот - жив! цел! орёл!</td>
+        </tr>
+        <tr>
+            <td><code>...да...</code>/<code>...пизда...</code></td>
+            <td>...</td>
+        </tr>
+        <tr>
+            <td><code>...honk...</code>/<code>...хонк...</code></td>
+            <td>PRAISE DA GOOSE</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div th:fragment="about" class="container-fluid">
+</div>
+
+<div th:fragment="games" class="container-fluid" style="height: 100%; width: 100%">
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSQOW6kHinqApUmjMlhRHWQHzz9HkyrviHOIz51n4aLxcFJa496kj25r82ilQ1VLR5MvTi1yJNC-0be/pubhtml?widget=true&amp;headers=false"></iframe>
+</div>
