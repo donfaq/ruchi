@@ -9,10 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.donfaq</groupId>
-    <artifactId>ruchi-integration</artifactId>
+    <artifactId>ruchi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ruchi-integration</name>
-    <description>Demo project for Spring Boot</description>
+    <name>ruchi</name>
 
     <properties>
         <java.version>14</java.version>
