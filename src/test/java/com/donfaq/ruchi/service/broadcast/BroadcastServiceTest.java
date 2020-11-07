@@ -1,8 +1,8 @@
 package com.donfaq.ruchi.service.broadcast;
 
 import com.donfaq.ruchi.model.BroadcastMessage;
+import com.donfaq.ruchi.service.BroadcastService;
 import com.donfaq.ruchi.service.input.TwitchInputService;
-import com.donfaq.ruchi.service.input.VkInputService;
 import com.donfaq.ruchi.service.output.DiscordOutputService;
 import com.donfaq.ruchi.service.output.TelegramOutputService;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.times;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class BroadcastServiceImplTest {
+public class BroadcastServiceTest {
 
     @MockBean
     private DiscordOutputService discordOutputService;
@@ -28,11 +28,8 @@ public class BroadcastServiceImplTest {
     @MockBean
     private TwitchInputService twitchInputService;
 
-    @MockBean
-    private VkInputService vkInputService;
-
     @Autowired
-    private BroadcastServiceImpl broadcastService;
+    private BroadcastService broadcastService;
 
     @Test
     public void broadcast() {

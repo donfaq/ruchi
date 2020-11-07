@@ -1,4 +1,4 @@
-package com.donfaq.ruchi.util;
+package com.donfaq.ruchi.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

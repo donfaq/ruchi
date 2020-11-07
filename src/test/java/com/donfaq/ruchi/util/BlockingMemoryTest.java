@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.util;
 
+import com.donfaq.ruchi.component.BlockingMemory;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import org.junit.jupiter.api.Test;
 
