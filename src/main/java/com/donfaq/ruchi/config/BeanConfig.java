@@ -1,6 +1,10 @@
 package com.donfaq.ruchi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vk.api.sdk.client.TransportClient;
+import com.vk.api.sdk.client.VkApiClient;
+import com.vk.api.sdk.client.actors.ServiceActor;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,4 +15,12 @@ public class BeanConfig {
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+
+    @Bean
+    public VkApiClient vkApiClient() {
+        //TODO: Consider using custom TransportClient (using RestTemplate or WebClient) for VkApiClient
+        TransportClient transportClient = new HttpTransportClient();
+        return new VkApiClient(transportClient);
+    }
+
 }
