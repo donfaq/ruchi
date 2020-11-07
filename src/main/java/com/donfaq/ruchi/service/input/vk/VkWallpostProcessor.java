@@ -48,7 +48,7 @@ public class VkWallpostProcessor {
                 .map(PhotoSizes::getUrl);
     }
 
-    private List<URL> processImages(List<WallpostAttachment> attachments) {
+    private List<URL> extractPhotoAttachments(List<WallpostAttachment> attachments) {
         List<URL> result = null;
         List<Photo> photos = attachments.stream()
                                         .filter(attach -> attach.getType().equals(WallpostAttachmentType.PHOTO))
@@ -66,6 +66,7 @@ public class VkWallpostProcessor {
     }
 
     public void process(Wallpost wallpost) {
+        log.info("Processing new wallpost");
         if (!wallpost.getPostType().equals(PostType.POST)
                 && !wallpost.getPostType().equals(PostType.POSTPONE)) {
             log.info("Received VK wallpost type isn't acceptable: {}", wallpost.getPostType());
@@ -77,7 +78,7 @@ public class VkWallpostProcessor {
             message.setText(wallpost.getText());
 
             if (wallpost.getAttachments() != null && !wallpost.getAttachments().isEmpty()) {
-                message.setImages(processImages(wallpost.getAttachments()));
+                message.setImages(extractPhotoAttachments(wallpost.getAttachments()));
             }
 
             if (this.memory.contains(message)) {

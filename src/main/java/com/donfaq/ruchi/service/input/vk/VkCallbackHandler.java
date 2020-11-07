@@ -37,7 +37,6 @@ public class VkCallbackHandler {
     }
 
     private void wallPostNew(Wallpost wallpost) {
-        log.info("New wallpost: {}", wallpost.toPrettyString());
         wallpostProcessor.process(wallpost);
     }
 
