@@ -7,6 +7,7 @@ import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Configuration
 public class BeanConfig {
@@ -21,6 +22,11 @@ public class BeanConfig {
         //TODO: Consider using custom TransportClient (using RestTemplate or WebClient) for VkApiClient
         TransportClient transportClient = new HttpTransportClient();
         return new VkApiClient(transportClient);
+    }
+
+    @Bean
+    public DefaultUriBuilderFactory defaultUriBuilderFactory() {
+        return new DefaultUriBuilderFactory();
     }
 
 }

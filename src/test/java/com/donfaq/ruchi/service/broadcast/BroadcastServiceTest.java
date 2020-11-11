@@ -2,7 +2,6 @@ package com.donfaq.ruchi.service.broadcast;
 
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.service.BroadcastService;
-import com.donfaq.ruchi.service.input.TwitchInputService;
 import com.donfaq.ruchi.service.output.DiscordOutputService;
 import com.donfaq.ruchi.service.output.TelegramOutputService;
 import org.junit.jupiter.api.Test;
@@ -24,9 +23,6 @@ public class BroadcastServiceTest {
 
     @MockBean
     private TelegramOutputService telegramOutputService;
-
-    @MockBean
-    private TwitchInputService twitchInputService;
 
     @Autowired
     private BroadcastService broadcastService;
