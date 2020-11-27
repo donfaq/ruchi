@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.service.input.twitch;
 
+import com.donfaq.ruchi.config.properties.TwitchConfigProperties;
 import com.donfaq.ruchi.model.twitch.api.TwitchGame;
 import com.donfaq.ruchi.model.twitch.api.TwitchResponse;
 import com.donfaq.ruchi.model.twitch.api.TwitchUser;
@@ -9,6 +10,7 @@ import com.donfaq.ruchi.model.twitch.websub.WebSubSubscriptionRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,15 +28,16 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@EnableConfigurationProperties(TwitchConfigProperties.class)
 public class TwitchApiService {
-    private static final String baseTwitchUri = "https://api.twitch.tv/helix";
 
     @Qualifier("twitchOauth2RestTemplate")
     private final OAuth2RestOperations restTemplate;
     private final UriBuilderFactory uriBuilderFactory;
+    private final TwitchConfigProperties twitchProperties;
 
     private UriBuilder twitchUriBuilder() {
-        return uriBuilderFactory.uriString(baseTwitchUri);
+        return uriBuilderFactory.uriString(twitchProperties.getBaseUrl());
     }
 
     public Optional<TwitchUser> getUsers(String login) {
@@ -53,8 +56,9 @@ public class TwitchApiService {
 
     public List<TwitchWebhookSubscription> getWebhookSubscriptions() {
         log.info("Getting Twitch webhook subscriptions");
+        URI url = twitchUriBuilder().pathSegment("webhooks").pathSegment("subscriptions").build();
         ResponseEntity<TwitchResponse<TwitchWebhookSubscription>> response = restTemplate.exchange(
-                "https://api.twitch.tv/helix/webhooks/subscriptions",
+                url,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<TwitchResponse<TwitchWebhookSubscription>>() {
@@ -65,13 +69,13 @@ public class TwitchApiService {
 
     public Optional<TwitchGame> getGame(String gameId) {
         log.info("Getting information from Twitch for gameId={}", gameId);
+        URI url = twitchUriBuilder().pathSegment("games").queryParam("id", gameId).build();
         ResponseEntity<TwitchResponse<TwitchGame>> response = restTemplate.exchange(
-                "https://api.twitch.tv/helix/games?id={gameId}",
+                url,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<TwitchResponse<TwitchGame>>() {
-                },
-                gameId
+                }
         );
         log.info("Result: {} {}", response.getStatusCodeValue(), response.getBody());
         return Objects.requireNonNull(response.getBody()).getData().stream().findFirst();
@@ -86,8 +90,9 @@ public class TwitchApiService {
         webSubSubscriptionRequest.setHubLeaseSeconds(864000);
         webSubSubscriptionRequest.setHubSecret(secret);
 
+        URI url = twitchUriBuilder().pathSegment("webhooks").pathSegment("hub").build();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                "https://api.twitch.tv/helix/webhooks/hub", webSubSubscriptionRequest, String.class);
+                url, webSubSubscriptionRequest, String.class);
 
         if (!responseEntity.getStatusCode().equals(HttpStatus.ACCEPTED)) {
             throw new IllegalStateException(

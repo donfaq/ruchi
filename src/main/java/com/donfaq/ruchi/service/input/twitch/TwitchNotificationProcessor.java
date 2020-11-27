@@ -1,31 +1,31 @@
 package com.donfaq.ruchi.service.input.twitch;
 
 import com.donfaq.ruchi.component.BlockingMemory;
+import com.donfaq.ruchi.config.properties.TwitchConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.model.twitch.api.TwitchResponse;
 import com.donfaq.ruchi.model.twitch.api.TwitchStream;
 import com.donfaq.ruchi.service.BroadcastService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@EnableConfigurationProperties(TwitchConfigProperties.class)
 public class TwitchNotificationProcessor {
-
-    @Value("${twitch.userLogin}")
-    private String TWITCH_USER_LOGIN;
 
     private final BroadcastService broadcastService;
     private final BlockingMemory memory;
     private final TwitchApiService twitchApiService;
+    private final TwitchConfigProperties configProperties;
 
     private Boolean isStreamOffline = Boolean.TRUE;
 
     private String constructBroadcastMessage(TwitchResponse<TwitchStream> notification) {
-        String channelUrl = "https://www.twitch.tv/" + TWITCH_USER_LOGIN;
+        String channelUrl = "https://www.twitch.tv/" + configProperties.getCredentials().getUserLogin();
         String messageText;
 
         if (notification.getData().isEmpty()) {
@@ -61,7 +61,6 @@ public class TwitchNotificationProcessor {
         this.memory.add(message);
         broadcastService.broadcast(message);
     }
-
 
 
 }

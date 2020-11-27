@@ -16,6 +16,13 @@ security:
       clientAuthenticationScheme: form
 app:
   url: ${APP_URL}
+  twitch:
+    pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
+    credentials:
+      userLogin: ${TWITCH_USER_LOGIN}
+      clientId: ${TWITCH_CLIENT_ID}
+      clientSecret: ${TWITCH_CLIENT_SECRET}
+
 vk:
   confirmationCode: ${VK_GROUP_CONFIRMATION_CODE}
   serviceAccessToken: ${VK_SERVICE_ACCESS_TOKEN}
@@ -26,8 +33,3 @@ discord:
 telegram:
   botToken: ${TELEGRAM_BOT_TOKEN}
   channelId: ${TELEGRAM_CHANNEL_ID}
-twitch:
-  userLogin: ${TWITCH_USER_LOGIN}
-  clientId: ${TWITCH_CLIENT_ID}
-  clientSecret: ${TWITCH_CLIENT_SECRET}
-  pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
