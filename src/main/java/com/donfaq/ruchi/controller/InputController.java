@@ -21,7 +21,7 @@ public class InputController {
     }
 
     @GetMapping("/twitch")
-    public ResponseEntity<String> twitchCallback(@RequestParam WebSubSubscriptionResponse response) {
+    public ResponseEntity<String> twitchCallback(WebSubSubscriptionResponse response) {
         return this.twitchWebSubHandler.handleWebSubSubscriptionResponse(response);
     }
 
