@@ -7,6 +7,7 @@ import com.donfaq.ruchi.service.BroadcastService;
 import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
 import com.vk.api.sdk.objects.photos.PhotoSizesType;
+import com.vk.api.sdk.objects.photos.responses.GetByIdResponse;
 import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -29,27 +32,27 @@ class VkWallpostProcessorTest {
     private VkApiService vkApiService;
     private BroadcastService broadcastService;
 
-    private final String TRIGGER = "triggerString";
-    private final String NOT_TRIGGER = "some text";
+    private final String TEXT_WITH_TRIGGER = "triggerString";
+    private final String TEXT_WITHOUT_TRIGGER = "some text";
 
     @BeforeEach
     void setUp() {
         memory = new BlockingMemory();
         vkApiService = Mockito.mock(VkApiService.class);
         broadcastService = Mockito.mock(BroadcastService.class);
-        wallpostProcessor = new VkWallpostProcessor(TRIGGER, vkApiService, broadcastService, memory);
+        wallpostProcessor = new VkWallpostProcessor(TEXT_WITH_TRIGGER, vkApiService, broadcastService, memory);
     }
 
     @Test
     public void testWallpostWithTrigger() {
         Wallpost wallpost = new Wallpost();
-        wallpost.setText(TRIGGER);
+        wallpost.setText(TEXT_WITH_TRIGGER);
         wallpost.setPostType(PostType.POST);
 
         wallpostProcessor.process(wallpost);
 
         BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TRIGGER);
+        broadcastMessage.setText(TEXT_WITH_TRIGGER);
 
         assertTrue(memory.contains(broadcastMessage));
         Mockito.verify(broadcastService, Mockito.times(1))
@@ -60,13 +63,13 @@ class VkWallpostProcessorTest {
     @Test
     public void testWallpostWithoutTrigger() {
         Wallpost wallpost = new Wallpost();
-        wallpost.setText(NOT_TRIGGER);
+        wallpost.setText(TEXT_WITHOUT_TRIGGER);
         wallpost.setPostType(PostType.POST);
 
         wallpostProcessor.process(wallpost);
 
         BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(NOT_TRIGGER);
+        broadcastMessage.setText(TEXT_WITHOUT_TRIGGER);
 
         assertFalse(memory.contains(broadcastMessage));
         Mockito.verifyNoInteractions(broadcastService);
@@ -74,48 +77,56 @@ class VkWallpostProcessorTest {
     }
 
     @Test
-    public void testWallpostWithTriggerAndPhotoAttachment() throws MalformedURLException {
+    public void testWallpostWithTriggerAndPhotoAttachment() throws MalformedURLException, URISyntaxException {
         Wallpost wallpost = new Wallpost();
-        wallpost.setText(TRIGGER);
+        wallpost.setText(TEXT_WITH_TRIGGER);
         wallpost.setPostType(PostType.POST);
 
         WallpostAttachment photoAttachment = new WallpostAttachment();
+
         photoAttachment.setType(WallpostAttachmentType.PHOTO);
         Photo photo = new Photo();
+        photo.setOwnerId(1);
+        photo.setId(1);
         PhotoSizes photoSizeM = new PhotoSizes();
         photoSizeM.setType(PhotoSizesType.M);
         URL urlM = new URL("https://test.com/M");
-        photoSizeM.setUrl(urlM);
+        photoSizeM.setUrl(urlM.toURI());
         PhotoSizes photoSizeZ = new PhotoSizes();
         photoSizeZ.setType(PhotoSizesType.Z);
-        URL urlZ = new URL("https://test.com/Z");
+        URI urlZ = URI.create("https://test.com/Z");
         photoSizeZ.setUrl(urlZ);
-        photo.setSizes(List.of(photoSizeM, photoSizeZ));
         photoAttachment.setPhoto(photo);
-
         WallpostAttachment notPhotoAttachment = new WallpostAttachment();
         notPhotoAttachment.setType(WallpostAttachmentType.GRAFFITI);
 
         wallpost.setAttachments(List.of(photoAttachment, notPhotoAttachment));
 
+        List<String> photoIdsList = List.of(String.format("%s_%s", photo.getOwnerId(), photo.getId()));
+        GetByIdResponse photoResponse = new GetByIdResponse();
+        photoResponse.setId(1);
+        photoResponse.setOwnerId(1);
+        photoResponse.setSizes(List.of(photoSizeM, photoSizeZ));
+        List<GetByIdResponse> photosGetByIdResponse = List.of(photoResponse);
 
-        Mockito.when(vkApiService.updatePhotoInfo(List.of(photo))).thenReturn(List.of(photo));
+
+        Mockito.when(vkApiService.getPhotoById(photoIdsList)).thenReturn(photosGetByIdResponse);
         wallpostProcessor.process(wallpost);
 
         BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TRIGGER);
-        broadcastMessage.setImages(List.of(urlZ));
+        broadcastMessage.setText(TEXT_WITH_TRIGGER);
+        broadcastMessage.setImages(List.of(urlZ.toURL()));
 
         assertTrue(memory.contains(broadcastMessage));
         Mockito.verify(broadcastService, Mockito.times(1))
                .broadcast(eq(broadcastMessage));
-        Mockito.verify(vkApiService, Mockito.times(1)).updatePhotoInfo(List.of(photo));
+        Mockito.verify(vkApiService, Mockito.times(1)).getPhotoById(photoIdsList);
     }
 
     @Test
     public void testWallpostWithTriggerWithoutPhotoAttachment() {
         Wallpost wallpost = new Wallpost();
-        wallpost.setText(TRIGGER);
+        wallpost.setText(TEXT_WITH_TRIGGER);
         wallpost.setPostType(PostType.POST);
 
         WallpostAttachment notPhotoAttachment = new WallpostAttachment();
@@ -126,7 +137,7 @@ class VkWallpostProcessorTest {
         wallpostProcessor.process(wallpost);
 
         BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TRIGGER);
+        broadcastMessage.setText(TEXT_WITH_TRIGGER);
 
         assertTrue(memory.contains(broadcastMessage));
         Mockito.verify(broadcastService, Mockito.times(1))

@@ -3,16 +3,19 @@ package com.donfaq.ruchi.service.input.vk;
 import com.donfaq.ruchi.component.BlockingMemory;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.service.BroadcastService;
-import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
+import com.vk.api.sdk.objects.photos.responses.GetByIdResponse;
 import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +43,7 @@ public class VkWallpostProcessor {
     }
 
 
-    private Optional<URL> getLargestPhotoUrl(Photo photo) {
+    private Optional<URI> getLargestPhotoUri(GetByIdResponse photo) {
         return photo
                 .getSizes()
                 .stream()
@@ -48,20 +51,39 @@ public class VkWallpostProcessor {
                 .map(PhotoSizes::getUrl);
     }
 
+    private Optional<URL> toURL(URI uri) {
+        Optional<URL> url = Optional.empty();
+        try {
+            url = Optional.of(uri.toURL());
+        } catch (MalformedURLException e) {
+            log.warn("Incorrect photo URL: {}", uri);
+        }
+        return url;
+    }
+
+    @SneakyThrows
     private List<URL> extractPhotoAttachments(List<WallpostAttachment> attachments) {
         List<URL> result = null;
-        List<Photo> photos = attachments.stream()
-                                        .filter(attach -> attach.getType().equals(WallpostAttachmentType.PHOTO))
-                                        .map(WallpostAttachment::getPhoto)
-                                        .collect(Collectors.toList());
-        if (!photos.isEmpty()) {
-            photos = vkApiService.updatePhotoInfo(photos);
-            result = photos.stream()
-                           .map(this::getLargestPhotoUrl)
-                           .filter(Optional::isPresent)
-                           .map(Optional::get)
-                           .collect(Collectors.toList());
+        List<String> photoIds = attachments
+                .stream()
+                .filter(attach -> attach.getType().equals(WallpostAttachmentType.PHOTO))
+                .map(WallpostAttachment::getPhoto)
+                .map(photo -> String.format("%s_%s", photo.getOwnerId(), photo.getId()))
+                .collect(Collectors.toList());
+
+        if (!photoIds.isEmpty()) {
+            result = vkApiService
+                    .getPhotoById(photoIds)
+                    .stream()
+                    .map(this::getLargestPhotoUri)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(this::toURL)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
         }
+
         return result;
     }
 
