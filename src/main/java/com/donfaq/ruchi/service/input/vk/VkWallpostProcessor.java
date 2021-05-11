@@ -4,7 +4,7 @@ import com.donfaq.ruchi.component.BlockingMemory;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.service.BroadcastService;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
-import com.vk.api.sdk.objects.photos.responses.GetByIdResponse;
+import com.vk.api.sdk.objects.photos.responses.GetByIdLegacyResponse;
 import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
@@ -43,7 +43,7 @@ public class VkWallpostProcessor {
     }
 
 
-    private Optional<URI> getLargestPhotoUri(GetByIdResponse photo) {
+    private Optional<URI> getLargestPhotoUri(GetByIdLegacyResponse photo) {
         return photo
                 .getSizes()
                 .stream()

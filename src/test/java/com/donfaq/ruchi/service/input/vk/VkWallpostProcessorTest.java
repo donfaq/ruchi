@@ -7,7 +7,7 @@ import com.donfaq.ruchi.service.BroadcastService;
 import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
 import com.vk.api.sdk.objects.photos.PhotoSizesType;
-import com.vk.api.sdk.objects.photos.responses.GetByIdResponse;
+import com.vk.api.sdk.objects.photos.responses.GetByIdLegacyResponse;
 import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
@@ -103,11 +103,11 @@ class VkWallpostProcessorTest {
         wallpost.setAttachments(List.of(photoAttachment, notPhotoAttachment));
 
         List<String> photoIdsList = List.of(String.format("%s_%s", photo.getOwnerId(), photo.getId()));
-        GetByIdResponse photoResponse = new GetByIdResponse();
+        GetByIdLegacyResponse photoResponse = new GetByIdLegacyResponse();
         photoResponse.setId(1);
         photoResponse.setOwnerId(1);
         photoResponse.setSizes(List.of(photoSizeM, photoSizeZ));
-        List<GetByIdResponse> photosGetByIdResponse = List.of(photoResponse);
+        List<GetByIdLegacyResponse> photosGetByIdResponse = List.of(photoResponse);
 
 
         Mockito.when(vkApiService.getPhotoById(photoIdsList)).thenReturn(photosGetByIdResponse);
