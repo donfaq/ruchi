@@ -2,7 +2,7 @@ package com.donfaq.ruchi.service.input.vk;
 
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
-import com.vk.api.sdk.objects.photos.responses.GetByIdResponse;
+import com.vk.api.sdk.objects.photos.responses.GetByIdLegacyResponse;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ public class VkApiService {
     }
 
     @SneakyThrows
-    public List<GetByIdResponse> getPhotoById(List<String> photos) {
+    public List<GetByIdLegacyResponse> getPhotoById(List<String> photos) {
         return vkApiClient.photos()
-                          .getById(new ServiceActor(null, serviceAccessToken), photos)
+                          .getByIdLegacy(new ServiceActor(null, serviceAccessToken), photos)
                           .execute();
     }
 }
