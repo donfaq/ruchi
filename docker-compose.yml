@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  ruchi-app:
+    image: ruchi-app
+    build:
+      context: .
+    restart: always
+    container_name: ruchi
+    environment:
+      - "APP_URL=${APP_URL}"
+      - "VK_TRIGGER_STRING=${VK_TRIGGER_STRING}"
+      - "VK_GROUP_ID=${VK_GROUP_ID}"
+      - "VK_GROUP_TOKEN=${VK_GROUP_TOKEN}"
+      - "VK_GROUP_CONFIRMATION_CODE=${VK_GROUP_CONFIRMATION_CODE}"
+      - "VK_SERVICE_ACCESS_TOKEN=${VK_SERVICE_ACCESS_TOKEN}"
+      - "DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}"
+      - "DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}"
+      - "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
+      - "TELEGRAM_CHANNEL_ID=${TELEGRAM_CHANNEL_ID}"
+      - "TWITCH_USER_LOGIN=${TWITCH_USER_LOGIN}"
+      - "TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}"
+      - "TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}"
+      - "TWITCH_PAUSE_BETWEEN_NOTIFICATIONS=${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}"
+      - "TWITCH_BOT_USERNAME=${TWITCH_BOT_USERNAME}"
+      - "TWITCH_BOT_OAUTH_TOKEN=${TWITCH_BOT_OAUTH_TOKEN}"
+      - "GOOGLE_IFRAME_URL=${GOOGLE_IFRAME_URL}"
+networks:
+  default:
+    external: true
+    name: reproxy

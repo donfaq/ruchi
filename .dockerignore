@@ -1,0 +1,8 @@
+.env
+.git/
+.idea/
+target/
+.github/
+LICENSE
+.gitignore
+*.iml
