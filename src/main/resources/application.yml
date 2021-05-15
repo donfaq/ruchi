@@ -2,7 +2,7 @@ spring:
   main:
     banner-mode: off
 server:
-  port: ${PORT:8080}
+  port: ${PORT:80}
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
