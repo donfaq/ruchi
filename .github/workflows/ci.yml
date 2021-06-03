@@ -39,7 +39,7 @@ jobs:
         run: echo ${{ steps.buildx.outputs.platforms }}
 
       - name: build and deploy master image to ghcr.io and dockerhub
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/add-github-docker-registry' }}
         env:
           GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
