@@ -1,11 +1,10 @@
-name: Java CI
+name: build
 
 on:
   push:
     branches:
     tags:
 #  pull_request:
-
 
 jobs:
   build:
@@ -31,6 +30,9 @@ jobs:
 
       - name: build and test
         run: mvn -B package --file pom.xml
+
+      - name: set up QEMU
+        uses: docker/setup-qemu-action@v1
 
       - name: set up Docker Buildx
         id: buildx
