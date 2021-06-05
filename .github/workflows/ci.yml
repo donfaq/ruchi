@@ -84,31 +84,18 @@ jobs:
           GIT_REPO: ${{ github.repository }}
           GIT_REPO_NAME: ${{ github.event.repository.name }}
           GIT_SHA: ${{ github.sha }}
-          APP_URL: ${{ secrets.APP_URL }}
-          VK_TRIGGER_STRING: ${{ secrets.VK_TRIGGER_STRING }}
-          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
-          VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
-          VK_GROUP_CONFIRMATION_CODE: ${{ secrets.VK_GROUP_CONFIRMATION_CODE }}
-          VK_SERVICE_ACCESS_TOKEN: ${{ secrets.VK_SERVICE_ACCESS_TOKEN }}
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
-          TWITCH_USER_LOGIN: ${{ secrets.TWITCH_USER_LOGIN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
-          GOOGLE_IFRAME_URL: ${{ secrets.GOOGLE_IFRAME_URL }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: GIT_REPO,GIT_SHA,GIT_REPO_NAME,APP_URL,VK_TRIGGER_STRING,VK_GROUP_ID,VK_GROUP_TOKEN,VK_GROUP_CONFIRMATION_CODE,VK_SERVICE_ACCESS_TOKEN,DISCORD_BOT_TOKEN,DISCORD_CHANNEL_ID,TELEGRAM_BOT_TOKEN,TELEGRAM_CHANNEL_ID,TWITCH_USER_LOGIN,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,GOOGLE_IFRAME_URL
+          envs: GIT_REPO,GIT_SHA,GIT_REPO_NAME
           script: |
             rm -rf ~/projects/$GIT_REPO_NAME
             cd ~/projects
             git clone git@github.com:$GIT_REPO.git
             cd ~/projects/$GIT_REPO_NAME
             git checkout -q -d $GIT_SHA
+            cp ~/projects/$GIT_REPO_NAME.env ./.env
             docker-compose down --remove-orphans
-            docker-compose up --detach --no-build --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
+            docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans

@@ -2,8 +2,6 @@ version: "3.9"
 services:
   ruchi-app:
     image: ghcr.io/donfaq/ruchi:master
-    build:
-      context: .
     restart: always
     container_name: ruchi
     environment:
