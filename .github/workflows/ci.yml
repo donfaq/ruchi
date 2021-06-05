@@ -14,7 +14,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt' # See 'Supported distributions' for available options
+          distribution: 'adopt'
           java-version: '16'
 
       - name: checkout
@@ -76,3 +76,26 @@ jobs:
               --build-arg CI=github --build-arg GITHUB_SHA=${GITHUB_SHA} --build-arg GIT_BRANCH=${ref} \
               --platform linux/amd64 \
               -t ghcr.io/${USERNAME}/ruchi:${ref} -t ${USERNAME}/ruchi:${ref} .
+
+      - name: ssh-to-server
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: appleboy/ssh-action@master
+        env:
+          GIT_REPO: ${{ github.repository }}
+          GIT_REPO_NAME: ${{ github.event.repository.name }}
+          GIT_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          envs: GIT_REPO,GIT_SHA,GIT_REPO_NAME
+          script: |
+            rm -rf ~/projects/$GIT_REPO_NAME
+            cd ~/projects
+            git clone git@github.com:$GIT_REPO.git
+            cd ~/projects/$GIT_REPO_NAME
+            git checkout -q -d $GIT_SHA
+            cp ~/projects/$GIT_REPO_NAME.env ./.env
+            docker-compose down --remove-orphans
+            docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
