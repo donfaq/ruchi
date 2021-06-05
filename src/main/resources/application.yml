@@ -17,7 +17,7 @@ security:
 app:
   url: ${APP_URL}
   twitch:
-    pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
+    pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS:2}
     credentials:
       userLogin: ${TWITCH_USER_LOGIN}
       clientId: ${TWITCH_CLIENT_ID}

@@ -76,3 +76,42 @@ jobs:
               --build-arg CI=github --build-arg GITHUB_SHA=${GITHUB_SHA} --build-arg GIT_BRANCH=${ref} \
               --platform linux/amd64 \
               -t ghcr.io/${USERNAME}/ruchi:${ref} -t ${USERNAME}/ruchi:${ref} .
+
+      - name: ssh-to-server
+#        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: appleboy/ssh-action@master
+        env:
+          GIT_REPO: ${{ github.repository }}
+          GIT_REPO_NAME: ${{ github.event.repository.name }}
+          GIT_SHA: ${{ github.sha }}
+          APP_URL: ${{ secrets.APP_URL }}
+          VK_TRIGGER_STRING: ${{ secrets.VK_TRIGGER_STRING }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+          VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+          VK_GROUP_CONFIRMATION_CODE: ${{ secrets.VK_GROUP_CONFIRMATION_CODE }}
+          VK_SERVICE_ACCESS_TOKEN: ${{ secrets.VK_SERVICE_ACCESS_TOKEN }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TWITCH_USER_LOGIN: ${{ secrets.TWITCH_USER_LOGIN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TWITCH_PAUSE_BETWEEN_NOTIFICATIONS: ${{ secrets.TWITCH_PAUSE_BETWEEN_NOTIFICATIONS }}
+          TWITCH_BOT_USERNAME: ${{ secrets.TWITCH_BOT_USERNAME }}
+          TWITCH_BOT_OAUTH_TOKEN: ${{ secrets.TWITCH_BOT_OAUTH_TOKEN }}
+          GOOGLE_IFRAME_URL: ${{ secrets.GOOGLE_IFRAME_URL }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          envs: GIT_REPO,GIT_SHA,GIT_REPO_NAME,APP_URL,VK_TRIGGER_STRING,VK_GROUP_ID,VK_GROUP_TOKEN,VK_GROUP_CONFIRMATION_CODE,VK_SERVICE_ACCESS_TOKEN,DISCORD_BOT_TOKEN,DISCORD_CHANNEL_ID,TELEGRAM_BOT_TOKEN,TELEGRAM_CHANNEL_ID,TWITCH_USER_LOGIN,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_PAUSE_BETWEEN_NOTIFICATIONS,TWITCH_BOT_USERNAME,TWITCH_BOT_OAUTH_TOKEN,GOOGLE_IFRAME_URL
+          script: |
+            rm -rf ~/projects/$GIT_REPO_NAME
+            cd ~/projects
+            git clone git@github.com:$GIT_REPO.git
+            cd ~/projects/$GIT_REPO_NAME
+            git checkout -q -d $GIT_SHA
+            docker-compose down --remove-orphans
+            docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
