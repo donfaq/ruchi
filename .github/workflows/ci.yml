@@ -111,4 +111,4 @@ jobs:
             cd ~/projects/$GIT_REPO_NAME
             git checkout -q -d $GIT_SHA
             docker-compose down --remove-orphans
-            docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
+            docker-compose up --detach --no-build --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
