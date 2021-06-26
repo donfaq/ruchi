@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.donfaq.ruchi.proto";
+option java_outer_classname = "TextGeneratorProto";
+
+// Service that generates text messages
+service TextGenerationService {
+  // Sends request to generate some text
+  rpc generate (TextGenerationRequest) returns (TextGenerationResponse) {}
+}
+
+// Request to generate some text
+message TextGenerationRequest {
+  string model_name = 1; // Name of the specific model to be used
+  string query = 2; // Optional prefix for generated message
+  int32 max_length = 3; // Optional maximum length for requested message
+}
+
+// Model response
+message TextGenerationResponse {
+  string message = 1; // Generated message
+}

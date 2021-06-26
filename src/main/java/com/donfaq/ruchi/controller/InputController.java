@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.controller;
 
+import com.donfaq.ruchi.component.TextGeneratorClient;
 import com.donfaq.ruchi.model.twitch.websub.WebSubSubscriptionResponse;
 import com.donfaq.ruchi.service.input.twitch.TwitchWebSubHandler;
 import com.donfaq.ruchi.service.input.vk.VkCallbackHandler;
@@ -18,6 +19,7 @@ public class InputController {
     private final VkCallbackHandler vkCallbackHandler;
     private final TwitchWebSubHandler twitchWebSubHandler;
     private final ObjectMapper objectMapper;
+    private final TextGeneratorClient textGeneratorClient;
 
     @PostMapping("/vk")
     public String vkCallback(@RequestBody String callbackMessage) {
@@ -35,4 +37,10 @@ public class InputController {
     public ResponseEntity<String> twitchCallback(@RequestBody String payload) {
         return this.twitchWebSubHandler.handleWebSubMessage(payload);
     }
+
+    @GetMapping("/generate")
+    public ResponseEntity<String> generateText() {
+        return ResponseEntity.ok(textGeneratorClient.generateText("", 500));
+    }
+
 }
