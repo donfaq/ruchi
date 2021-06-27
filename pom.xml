@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.5</version>
+        <version>2.5.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.donfaq</groupId>
@@ -18,7 +18,7 @@
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>2.4.5</spring.boot.version>
+        <spring.boot.version>2.5.1</spring.boot.version>
     </properties>
 
     <repositories>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.1_266</version>
+            <version>4.3.0_283</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
