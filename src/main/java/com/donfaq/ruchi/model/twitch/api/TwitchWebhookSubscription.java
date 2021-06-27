@@ -1,11 +1,11 @@
 package com.donfaq.ruchi.model.twitch.api;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TwitchWebhookSubscription {
     /**
      * Date and time when this subscription expires. Encoded as RFC3339. The timezone is always UTC (“Z”).
