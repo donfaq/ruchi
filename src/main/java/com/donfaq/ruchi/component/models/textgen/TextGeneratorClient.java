@@ -1,4 +1,4 @@
-package com.donfaq.ruchi.component;
+package com.donfaq.ruchi.component.models.textgen;
 
 import com.donfaq.ruchi.proto.TextGenerationRequest;
 import com.donfaq.ruchi.proto.TextGenerationServiceGrpc;
@@ -26,7 +26,7 @@ public class TextGeneratorClient {
         blockingStub = TextGenerationServiceGrpc.newBlockingStub(managedChannel);
     }
 
-    public String generateText(String query, int maxLength) {
+    public String generateText(String model, String query, int maxLength) {
         log.info(String.format("Generating text with predicate '%s'", query));
         String result;
         if (query == null) {
@@ -34,7 +34,7 @@ public class TextGeneratorClient {
         }
         TextGenerationRequest request = TextGenerationRequest
                 .newBuilder()
-                .setModelName("chat")
+                .setModelName(model)
                 .setQuery(query)
                 .setMaxLength(maxLength)
                 .build();
