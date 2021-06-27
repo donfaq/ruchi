@@ -3,6 +3,7 @@ package com.donfaq.ruchi.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.vk.api.sdk.client.TransportClient;
@@ -18,15 +19,18 @@ public class BeanConfig {
     private final String twitchClientId;
     private final String twitchClientSecret;
     private final String twitchBotOAuthToken;
+    private final String twitchChannelName;
 
     public BeanConfig(
             @Value("${twitch.clientId}") String twitchClientId,
             @Value("${twitch.clientSecret}") String twitchClientSecret,
-            @Value("${twitch.botOAuthToken}") String twitchBotOAuthToken
+            @Value("${twitch.botOAuthToken}") String twitchBotOAuthToken,
+            @Value("${twitch.channelName}") String twitchChannelName
     ) {
         this.twitchBotOAuthToken = twitchBotOAuthToken;
         this.twitchClientId = twitchClientId;
         this.twitchClientSecret = twitchClientSecret;
+        this.twitchChannelName = twitchChannelName;
     }
 
     @Bean
@@ -50,14 +54,22 @@ public class BeanConfig {
 
     @Bean
     public TwitchClient configureTwitchClient() {
-        return TwitchClientBuilder
+        TwitchClient twitchClient = TwitchClientBuilder
                 .builder()
+
                 .withClientId(this.twitchClientId)
                 .withClientSecret(this.twitchClientSecret)
                 .withEnableHelix(true)
+
                 .withChatAccount(new OAuth2Credential("twitch", this.twitchBotOAuthToken))
                 .withEnableChat(true)
+                .withCommandTrigger("!")
+
                 .build();
+
+        twitchClient.getChat().joinChannel(this.twitchChannelName);
+
+        return twitchClient;
     }
 
 }

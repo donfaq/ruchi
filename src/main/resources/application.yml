@@ -19,7 +19,7 @@ app:
   twitch:
     pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
     credentials:
-      userLogin: ${TWITCH_USER_LOGIN}
+      userLogin: ${TWITCH_CHANNEL_NAME}
       clientId: ${TWITCH_CLIENT_ID}
       clientSecret: ${TWITCH_CLIENT_SECRET}
 
@@ -37,3 +37,4 @@ twitch:
   clientId: ${TWITCH_CLIENT_ID}
   clientSecret: ${TWITCH_CLIENT_SECRET}
   botOAuthToken: ${TWITCH_BOT_OAUTH_TOKEN}
+  channelName: ${TWITCH_CHANNEL_NAME}
