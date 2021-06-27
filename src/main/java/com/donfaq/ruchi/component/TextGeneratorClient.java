@@ -29,6 +29,9 @@ public class TextGeneratorClient {
     public String generateText(String query, int maxLength) {
         log.info(String.format("Generating text with predicate '%s'", query));
         String result;
+        if (query == null) {
+            query = "";
+        }
         TextGenerationRequest request = TextGenerationRequest
                 .newBuilder()
                 .setModelName("chat")

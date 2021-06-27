@@ -1,12 +1,12 @@
 package com.donfaq.ruchi.service.input.vk;
 
+import com.donfaq.ruchi.config.properties.VkConfigProperties;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.vk.api.sdk.objects.callback.messages.CallbackMessage;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
@@ -15,14 +15,11 @@ import java.util.Map;
 @Slf4j
 @Component
 public class VkCallbackHandler {
-    private final String confirmationCode;
     private final VkWallpostProcessor wallpostProcessor;
+    private final VkConfigProperties vkConfig;
 
-    public VkCallbackHandler(
-            @Value("${vk.confirmationCode}") String confirmationCode,
-            VkWallpostProcessor wallpostProcessor
-    ) {
-        this.confirmationCode = confirmationCode;
+    public VkCallbackHandler(VkConfigProperties vkConfig, VkWallpostProcessor wallpostProcessor) {
+        this.vkConfig = vkConfig;
         this.wallpostProcessor = wallpostProcessor;
     }
 
@@ -48,7 +45,7 @@ public class VkCallbackHandler {
     public String parse(JsonObject json) {
         String type = json.get("type").getAsString();
         if (type.equalsIgnoreCase(CALLBACK_EVENT_CONFIRMATION)) {
-            return confirmationCode;
+            return this.vkConfig.getConfirmationCode();
         }
         Type typeOfClass = CALLBACK_TYPES.get(type);
         if (typeOfClass == null) {

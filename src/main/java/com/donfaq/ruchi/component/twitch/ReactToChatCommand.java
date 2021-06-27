@@ -4,6 +4,7 @@ import com.donfaq.ruchi.component.TextGeneratorClient;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.CommandEvent;
+import com.github.twitch4j.common.util.CryptoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -38,21 +39,12 @@ public class ReactToChatCommand {
         }
 
         switch (command) {
-            case "speak":
-                event.getTwitchChat().sendMessage(
-                        event.getSourceId(),
-                        textGeneratorClient.generateText(query, 240)
-                );
             case "ping":
-                event.getTwitchChat().sendMessage(
-                        event.getSourceId(),
-                        "pong"
-                );
+                event.respondToUser("pong");
+            case "speak":
+                event.respondToUser(textGeneratorClient.generateText(query, 240));
             default:
-                event.getTwitchChat().sendMessage(
-                        event.getSourceId(),
-                        "Я такое не умею :("
-                );
+                event.respondToUser("Я такое не умею :(");
         }
     }
 }

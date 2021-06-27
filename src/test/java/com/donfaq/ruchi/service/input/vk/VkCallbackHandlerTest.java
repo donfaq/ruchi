@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.service.input.vk;
 
+import com.donfaq.ruchi.config.properties.VkConfigProperties;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,21 +11,24 @@ import static org.mockito.ArgumentMatchers.eq;
 
 public class VkCallbackHandlerTest {
     private VkCallbackHandler vkCallbackHandler;
-    private String confirmationCode;
+    private VkConfigProperties vkConfig;
     private VkWallpostProcessor vkWallpostProcessor;
 
     @BeforeEach
     void setUp() {
-        confirmationCode = "testValue";
+
+        this.vkConfig = new VkConfigProperties();
+        vkConfig.setConfirmationCode("testValue");
+
         vkWallpostProcessor = Mockito.mock(VkWallpostProcessor.class);
-        vkCallbackHandler = new VkCallbackHandler(confirmationCode, vkWallpostProcessor);
+        vkCallbackHandler = new VkCallbackHandler(vkConfig, vkWallpostProcessor);
     }
 
     @Test
     public void testConfirmationMessage() {
         String inputJson = "{\"type\": confirmation}";
         String result = vkCallbackHandler.parse(inputJson);
-        assertEquals(confirmationCode, result);
+        assertEquals(vkConfig.getConfirmationCode(), result);
     }
 
     @Test

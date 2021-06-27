@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.service.output;
 
+import com.donfaq.ruchi.config.properties.TelegramConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.pengrad.telegrambot.Callback;
 import com.pengrad.telegrambot.TelegramBot;
@@ -8,7 +9,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,22 +18,20 @@ import java.io.IOException;
 public class TelegramOutputService implements OutputService {
 
     private final TelegramBot bot;
-    private final String tgChannelId;
+    private final TelegramConfigProperties tgConfig;
 
-    public TelegramOutputService(
-            @Value("${telegram.botToken}") String tgBotToken,
-            @Value("${telegram.channelId}") String tgChannelId
-    ) {
-        this.bot = new TelegramBot(tgBotToken);
-        this.tgChannelId = tgChannelId;
+    public TelegramOutputService(TelegramConfigProperties tgConfig) {
+        this.tgConfig = tgConfig;
+        this.bot = new TelegramBot(this.tgConfig.getBotToken());
     }
 
     @Override
     public void send(BroadcastMessage message) {
 
         if (message.getImages() != null) {
-            SendPhoto request = new SendPhoto(tgChannelId, message.getImages().get(0).toString())
-                    .caption(message.getText());
+            SendPhoto request = new SendPhoto(
+                    this.tgConfig.getChannelId(), message.getImages().get(0).toString()
+            ).caption(message.getText());
 
             bot.execute(request, new Callback<>() {
                 @Override
@@ -47,7 +45,7 @@ public class TelegramOutputService implements OutputService {
                 }
             });
         } else {
-            SendMessage request = new SendMessage(tgChannelId, message.getText())
+            SendMessage request = new SendMessage(this.tgConfig.getChannelId(), message.getText())
                     .parseMode(ParseMode.HTML)
                     .disableWebPagePreview(true);
             bot.execute(request, new Callback<>() {

@@ -1,6 +1,7 @@
 package com.donfaq.ruchi.service.input.vk;
 
 import com.donfaq.ruchi.component.BlockingMemory;
+import com.donfaq.ruchi.config.properties.VkConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.service.BroadcastService;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
@@ -9,9 +10,9 @@ import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -24,23 +25,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class VkWallpostProcessor {
-    private final String triggerString;
     private final VkApiService vkApiService;
     private final BroadcastService broadcastService;
     private final BlockingMemory memory;
-
-    public VkWallpostProcessor(
-            @Value("${vk.triggerString}") String triggerString,
-            VkApiService vkApiService,
-            BroadcastService broadcastService,
-            BlockingMemory memory
-    ) {
-        this.triggerString = triggerString;
-        this.vkApiService = vkApiService;
-        this.broadcastService = broadcastService;
-        this.memory = memory;
-    }
+    private final VkConfigProperties vkConfig;
 
 
     private Optional<URI> getLargestPhotoUri(GetByIdLegacyResponse photo) {
@@ -95,7 +85,7 @@ public class VkWallpostProcessor {
             return;
         }
 
-        if (wallpost.getText() != null && wallpost.getText().contains(triggerString)) {
+        if (wallpost.getText() != null && wallpost.getText().contains(this.vkConfig.getTriggerString())) {
             BroadcastMessage message = new BroadcastMessage();
             message.setText(wallpost.getText());
 

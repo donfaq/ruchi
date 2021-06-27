@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.service.output;
 
+import com.donfaq.ruchi.config.properties.DiscordConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -9,7 +10,6 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
@@ -21,17 +21,15 @@ public class DiscordOutputService implements OutputService {
     private final TextChannel textChannel;
 
     @Autowired
-    public DiscordOutputService(
-            @Value("${discord.botToken}") final String botToken,
-            @Value("${discord.channelId}") final long channelId
-    ) throws LoginException, InterruptedException {
+    public DiscordOutputService(DiscordConfigProperties discordConfig)
+            throws LoginException, InterruptedException {
         log.info("Connecting to Discord bot");
-        JDA jda = JDABuilder.createDefault(botToken)
+        JDA jda = JDABuilder.createDefault(discordConfig.getBotToken())
                             .build()
                             .awaitReady();
 
         log.info("Trying to reach specified channel");
-        textChannel = (TextChannel) jda.getGuildChannelById(ChannelType.TEXT, channelId);
+        textChannel = (TextChannel) jda.getGuildChannelById(ChannelType.TEXT, discordConfig.getChannelId());
 
         if (textChannel == null) {
             throw new InternalError("Can't find Discord channel by ID");
@@ -51,7 +49,7 @@ public class DiscordOutputService implements OutputService {
 
         if (message.getImages() != null) {
             for (URL image : message.getImages()) {
-                action = action.embed(
+                action = action.setEmbeds(
                         new EmbedBuilder().setImage(image.toString()).build()
                 );
             }

@@ -6,23 +6,6 @@ server:
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
-security:
-  oauth2:
-    client:
-      clientId: ${TWITCH_CLIENT_ID}
-      clientSecret: ${TWITCH_CLIENT_SECRET}
-      accessTokenUri: https://id.twitch.tv/oauth2/token
-      grantType: client_credentials
-      clientAuthenticationScheme: form
-app:
-  url: ${APP_URL}
-  twitch:
-    pauseBetweenNotifications: ${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}
-    credentials:
-      userLogin: ${TWITCH_CHANNEL_NAME}
-      clientId: ${TWITCH_CLIENT_ID}
-      clientSecret: ${TWITCH_CLIENT_SECRET}
-
 vk:
   confirmationCode: ${VK_GROUP_CONFIRMATION_CODE}
   serviceAccessToken: ${VK_SERVICE_ACCESS_TOKEN}
