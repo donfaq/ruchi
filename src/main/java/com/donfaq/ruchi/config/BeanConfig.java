@@ -2,16 +2,32 @@ package com.donfaq.ruchi.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
-import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Configuration
 public class BeanConfig {
+    private final String twitchClientId;
+    private final String twitchClientSecret;
+    private final String twitchBotOAuthToken;
+
+    public BeanConfig(
+            @Value("${twitch.clientId}") String twitchClientId,
+            @Value("${twitch.clientSecret}") String twitchClientSecret,
+            @Value("${twitch.botOAuthToken}") String twitchBotOAuthToken
+    ) {
+        this.twitchBotOAuthToken = twitchBotOAuthToken;
+        this.twitchClientId = twitchClientId;
+        this.twitchClientSecret = twitchClientSecret;
+    }
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -29,6 +45,19 @@ public class BeanConfig {
     @Bean
     public DefaultUriBuilderFactory defaultUriBuilderFactory() {
         return new DefaultUriBuilderFactory();
+    }
+
+
+    @Bean
+    public TwitchClient configureTwitchClient() {
+        return TwitchClientBuilder
+                .builder()
+                .withClientId(this.twitchClientId)
+                .withClientSecret(this.twitchClientSecret)
+                .withEnableHelix(true)
+                .withChatAccount(new OAuth2Credential("twitch", this.twitchBotOAuthToken))
+                .withEnableChat(true)
+                .build();
     }
 
 }
