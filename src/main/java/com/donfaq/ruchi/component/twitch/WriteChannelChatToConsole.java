@@ -19,11 +19,6 @@ public class WriteChannelChatToConsole {
 
     public void onChannelMessage(ChannelMessageEvent event) {
         log.info("[#{}] @{}: {}", event.getChannel().getName(), event.getUser().getName(), event.getMessage());
-
-        event.getTwitchChat().sendMessage(
-                event.getChannel().getName(),
-                String.format("@%s кек", event.getUser().getName())
-        );
     }
 
 }
