@@ -22,6 +22,12 @@ services:
       - "TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}"
       - "TWITCH_BOT_OAUTH_TOKEN=${TWITCH_BOT_OAUTH_TOKEN}"
       - "GOOGLE_IFRAME_URL=${GOOGLE_IFRAME_URL}"
+    labels:
+      reproxy.enabled: true
+      reproxy.port: 80
+      reproxy.server: '*'
+      reproxy.route: '^/ruchi/(.*)'
+      reproxy.dest: '/$$1'
   models:
     image: donfaq/ruchi-models:v1.0
     restart: always
