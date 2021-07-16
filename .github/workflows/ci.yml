@@ -4,7 +4,6 @@ on:
   push:
     branches:
     tags:
-#  pull_request:
 
 jobs:
   build:
@@ -49,8 +48,9 @@ jobs:
           docker tag donfaq/ruchi:latest donfaq/ruchi:${ref}
           docker push -aq donfaq/ruchi
 
+      #        if: ${{ github.ref == 'refs/heads/master' }}
+
       - name: ssh-to-server
-        if: ${{ github.ref == 'refs/heads/master' }}
         uses: appleboy/ssh-action@master
         env:
           GIT_REPO: ${{ github.repository }}
