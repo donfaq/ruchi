@@ -169,6 +169,9 @@
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </exclude>
                     </excludes>
+                    <image>
+                        <name>donfaq/ruchi</name>
+                    </image>
                 </configuration>
             </plugin>
 

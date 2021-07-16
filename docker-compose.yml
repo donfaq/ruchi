@@ -1,15 +1,18 @@
 version: "3.9"
 services:
   ruchi-app:
-    image: ghcr.io/donfaq/ruchi:master
+    image: donfaq/ruchi:latest
     restart: always
     container_name: ruchi
     environment:
+      - "MODEL_ADDRESS=textgen"
+      - "MODEL_PORT=50051"
       - "VK_TRIGGER_STRING=${VK_TRIGGER_STRING}"
       - "VK_GROUP_CONFIRMATION_CODE=${VK_GROUP_CONFIRMATION_CODE}"
       - "VK_SERVICE_ACCESS_TOKEN=${VK_SERVICE_ACCESS_TOKEN}"
       - "DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}"
       - "DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}"
+      - "DISCORD_GUILD_ID=${DISCORD_GUILD_ID}"
       - "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
       - "TELEGRAM_CHANNEL_ID=${TELEGRAM_CHANNEL_ID}"
       - "TWITCH_CHANNEL_NAME=${TWITCH_CHANNEL_NAME}"
@@ -17,6 +20,10 @@ services:
       - "TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}"
       - "TWITCH_BOT_OAUTH_TOKEN=${TWITCH_BOT_OAUTH_TOKEN}"
       - "GOOGLE_IFRAME_URL=${GOOGLE_IFRAME_URL}"
+  models:
+    image: donfaq/ruchi-models:v1.0
+    restart: always
+    container_name: textgen
 networks:
   default:
     external: true

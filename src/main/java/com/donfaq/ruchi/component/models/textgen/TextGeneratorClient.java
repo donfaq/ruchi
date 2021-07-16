@@ -1,5 +1,6 @@
 package com.donfaq.ruchi.component.models.textgen;
 
+import com.donfaq.ruchi.config.properties.ModelConfigProperties;
 import com.donfaq.ruchi.proto.TextGenerationRequest;
 import com.donfaq.ruchi.proto.TextGenerationServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -8,21 +9,17 @@ import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 @Slf4j
 @Component
 public class TextGeneratorClient {
-    private TextGenerationServiceGrpc.TextGenerationServiceBlockingStub blockingStub;
+    private final TextGenerationServiceGrpc.TextGenerationServiceBlockingStub blockingStub;
 
-    @PostConstruct
-    private void init() {
+    public TextGeneratorClient(ModelConfigProperties properties) {
         log.info("Initializing RPC connection to text generator");
         ManagedChannel managedChannel = ManagedChannelBuilder
-                .forAddress("localhost", 50051)
+                .forAddress(properties.getAddress(), properties.getPort())
                 .usePlaintext()
                 .build();
-
         blockingStub = TextGenerationServiceGrpc.newBlockingStub(managedChannel);
     }
 

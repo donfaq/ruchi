@@ -22,3 +22,6 @@ twitch:
   clientSecret: ${TWITCH_CLIENT_SECRET}
   botOAuthToken: ${TWITCH_BOT_OAUTH_TOKEN}
   channelName: ${TWITCH_CHANNEL_NAME}
+model:
+  address: ${MODEL_ADDRESS}
+  port: ${MODEL_PORT}
