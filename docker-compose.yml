@@ -4,6 +4,8 @@ services:
     image: donfaq/ruchi:latest
     restart: always
     container_name: ruchi
+    expose:
+      - "80"
     environment:
       - "MODEL_ADDRESS=textgen"
       - "MODEL_PORT=50051"
