@@ -18,4 +18,7 @@ public class DiscordConfigProperties {
 
     @NotBlank
     private String channelId;
+
+    @NotBlank
+    private String guildId;
 }

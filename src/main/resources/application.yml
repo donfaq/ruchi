@@ -12,6 +12,7 @@ vk:
   triggerString: ${VK_TRIGGER_STRING}
 discord:
   botToken: ${DISCORD_BOT_TOKEN}
+  guildId: ${DISCORD_GUILD_ID}
   channelId: ${DISCORD_CHANNEL_ID}
 telegram:
   botToken: ${TELEGRAM_BOT_TOKEN}

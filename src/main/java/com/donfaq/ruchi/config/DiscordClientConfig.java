@@ -35,17 +35,21 @@ public class DiscordClientConfig {
                 .build()
                 .awaitReady();
 
-        Guild guild = jda.getGuildById(536601294241267722L);
+        Guild guild = jda.getGuildById(discordConfig.getGuildId());
         assert guild != null;
+        log.info("Updating discord bot commands in specified guild: {}", guild);
 
+        guild.updateCommands()
+             .addCommands(
+                     new CommandData("ping", "pong"),
+                     new CommandData("speak", "Пишет в чат фразу, сгенерированную из логов чата")
+                             .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)"),
+                     new CommandData("gachi", "Gachimuchi-гороскоп"),
+                     new CommandData("kalik", "Пишет в чат фразу на языке калюмбаса"),
+                     new CommandData("pron", "Генерирует название порноролика")
+             )
+             .queue();
 
-        guild.upsertCommand(new CommandData("ping", "pong")).queue();
-        guild.upsertCommand(new CommandData("speak", "Пишет в чат фразу, сгенерированную из логов чата")
-                .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)")
-        ).queue();
-        guild.upsertCommand(new CommandData("gachi", "Гачимучи-гороскоп")).queue();
-        guild.upsertCommand(new CommandData("kalik", "Пишет в чат фразу на кальянном языке")).queue();
-        guild.upsertCommand(new CommandData("pron", "Генерирует название порноролика")).queue();
         return jda;
     }
 }
