@@ -50,7 +50,7 @@ jobs:
           docker push -aq donfaq/ruchi
 
       - name: ssh-to-server
-#        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' }}
         uses: appleboy/ssh-action@master
         env:
           GIT_REPO: ${{ github.repository }}
