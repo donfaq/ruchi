@@ -1,37 +1,23 @@
 package com.donfaq.ruchi.service.output;
 
+import com.donfaq.ruchi.config.properties.DiscordConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.security.auth.login.LoginException;
-import java.net.URL;
 
 @Slf4j
 @Service
 public class DiscordOutputService implements OutputService {
     private final TextChannel textChannel;
 
-    @Autowired
-    public DiscordOutputService(
-            @Value("${discord.botToken}") final String botToken,
-            @Value("${discord.channelId}") final long channelId
-    ) throws LoginException, InterruptedException {
-        log.info("Connecting to Discord bot");
-        JDA jda = JDABuilder.createDefault(botToken)
-                            .build()
-                            .awaitReady();
-
+    public DiscordOutputService(JDA jda, DiscordConfigProperties discordConfig) {
         log.info("Trying to reach specified channel");
-        textChannel = (TextChannel) jda.getGuildChannelById(ChannelType.TEXT, channelId);
+        textChannel = (TextChannel) jda.getGuildChannelById(ChannelType.TEXT, discordConfig.getChannelId());
 
         if (textChannel == null) {
             throw new InternalError("Can't find Discord channel by ID");
@@ -46,18 +32,16 @@ public class DiscordOutputService implements OutputService {
     @Override
     public void send(BroadcastMessage message) {
         log.info("Constructing new Discord message");
-
         MessageAction action = textChannel.sendMessage(message.getText());
-
         if (message.getImages() != null) {
-            for (URL image : message.getImages()) {
-                action = action.embed(
-                        new EmbedBuilder().setImage(image.toString()).build()
-                );
-            }
+            action = action.setEmbeds(
+                    message.getImages()
+                           .stream()
+                           .map(url -> new EmbedBuilder().setImage(url.toString()).build())
+                           .toList()
+            );
             action = action.override(true);
         }
-
         log.info("Sending message to Discord channel");
         action.queue();
     }

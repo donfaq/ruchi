@@ -6,25 +6,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties("twitch")
-public class TwitchConfigProperties {
+@ConfigurationProperties("vk")
+public class VkConfigProperties {
+    @NotBlank
+    private String confirmationCode;
 
     @NotBlank
-    private String clientId;
+    private String serviceAccessToken;
 
     @NotBlank
-    private String clientSecret;
-
-    @NotBlank
-    private String botOAuthToken;
-
-    @NotBlank
-    private String channelName;
+    private String triggerString;
 }
-
-

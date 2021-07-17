@@ -2,6 +2,7 @@ package com.donfaq.ruchi.service.input.vk;
 
 
 import com.donfaq.ruchi.component.BlockingMemory;
+import com.donfaq.ruchi.config.properties.VkConfigProperties;
 import com.donfaq.ruchi.model.BroadcastMessage;
 import com.donfaq.ruchi.service.BroadcastService;
 import com.vk.api.sdk.objects.photos.Photo;
@@ -31,6 +32,7 @@ class VkWallpostProcessorTest {
     private BlockingMemory memory;
     private VkApiService vkApiService;
     private BroadcastService broadcastService;
+    private VkConfigProperties vkConfig;
 
     private final String TEXT_WITH_TRIGGER = "triggerString";
     private final String TEXT_WITHOUT_TRIGGER = "some text";
@@ -40,7 +42,12 @@ class VkWallpostProcessorTest {
         memory = new BlockingMemory();
         vkApiService = Mockito.mock(VkApiService.class);
         broadcastService = Mockito.mock(BroadcastService.class);
-        wallpostProcessor = new VkWallpostProcessor(TEXT_WITH_TRIGGER, vkApiService, broadcastService, memory);
+
+        vkConfig = new VkConfigProperties();
+        vkConfig.setTriggerString(TEXT_WITH_TRIGGER);
+        wallpostProcessor = new VkWallpostProcessor(
+                vkApiService, broadcastService, memory, vkConfig
+        );
     }
 
     @Test

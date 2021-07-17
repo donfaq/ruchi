@@ -1,23 +1,37 @@
 version: "3.9"
 services:
   ruchi-app:
-    image: ghcr.io/donfaq/ruchi:master
+    image: donfaq/ruchi:latest
     restart: always
     container_name: ruchi
+    expose:
+      - "80"
     environment:
-      - "APP_URL=${APP_URL}"
+      - "MODEL_ADDRESS=textgen"
+      - "MODEL_PORT=50051"
       - "VK_TRIGGER_STRING=${VK_TRIGGER_STRING}"
       - "VK_GROUP_CONFIRMATION_CODE=${VK_GROUP_CONFIRMATION_CODE}"
       - "VK_SERVICE_ACCESS_TOKEN=${VK_SERVICE_ACCESS_TOKEN}"
       - "DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}"
       - "DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}"
+      - "DISCORD_GUILD_ID=${DISCORD_GUILD_ID}"
       - "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
       - "TELEGRAM_CHANNEL_ID=${TELEGRAM_CHANNEL_ID}"
-      - "TWITCH_USER_LOGIN=${TWITCH_USER_LOGIN}"
+      - "TWITCH_CHANNEL_NAME=${TWITCH_CHANNEL_NAME}"
       - "TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}"
       - "TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}"
-      - "TWITCH_PAUSE_BETWEEN_NOTIFICATIONS=${TWITCH_PAUSE_BETWEEN_NOTIFICATIONS}"
+      - "TWITCH_BOT_OAUTH_TOKEN=${TWITCH_BOT_OAUTH_TOKEN}"
       - "GOOGLE_IFRAME_URL=${GOOGLE_IFRAME_URL}"
+    labels:
+      reproxy.enabled: true
+      reproxy.port: 80
+      reproxy.server: '*'
+      reproxy.route: '^/ruchi/(.*)'
+      reproxy.dest: '/$$1'
+  models:
+    image: donfaq/ruchi-models:v1.0
+    restart: always
+    container_name: textgen
 networks:
   default:
     external: true

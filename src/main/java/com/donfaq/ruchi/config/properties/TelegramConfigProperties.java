@@ -6,25 +6,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties("twitch")
-public class TwitchConfigProperties {
+@ConfigurationProperties("telegram")
+public class TelegramConfigProperties {
+    @NotBlank
+    private String botToken;
 
     @NotBlank
-    private String clientId;
-
-    @NotBlank
-    private String clientSecret;
-
-    @NotBlank
-    private String botOAuthToken;
-
-    @NotBlank
-    private String channelName;
+    private String channelId;
 }
-
-
