@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class ReactToSlashCommand extends ListenerAdapter {
 
     private String getQuery(SlashCommandEvent event) {
         OptionMapping queryOption = event.getOption("начало");
-        if (queryOption == null) {
+        if (Objects.isNull(queryOption)) {
             return "";
         } else {
             return queryOption.getAsString();

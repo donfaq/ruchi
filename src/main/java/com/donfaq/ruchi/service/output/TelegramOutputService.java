@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,22 +16,18 @@ import java.io.IOException;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TelegramOutputService implements OutputService {
 
     private final TelegramBot bot;
-    private final TelegramConfigProperties tgConfig;
-
-    public TelegramOutputService(TelegramConfigProperties tgConfig) {
-        this.tgConfig = tgConfig;
-        this.bot = new TelegramBot(this.tgConfig.getBotToken());
-    }
+    private final TelegramConfigProperties properties;
 
     @Override
     public void send(BroadcastMessage message) {
 
         if (message.getImages() != null) {
             SendPhoto request = new SendPhoto(
-                    this.tgConfig.getChannelId(), message.getImages().get(0).toString()
+                    this.properties.getChannelId(), message.getImages().get(0).toString()
             ).caption(message.getText());
 
             bot.execute(request, new Callback<>() {
@@ -45,7 +42,7 @@ public class TelegramOutputService implements OutputService {
                 }
             });
         } else {
-            SendMessage request = new SendMessage(this.tgConfig.getChannelId(), message.getText())
+            SendMessage request = new SendMessage(this.properties.getChannelId(), message.getText())
                     .parseMode(ParseMode.HTML)
                     .disableWebPagePreview(true);
             bot.execute(request, new Callback<>() {

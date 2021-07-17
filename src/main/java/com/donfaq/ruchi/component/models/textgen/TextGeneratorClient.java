@@ -9,6 +9,8 @@ import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 public class TextGeneratorClient {
@@ -26,7 +28,7 @@ public class TextGeneratorClient {
     public String generateText(String model, String query, int maxLength) {
         log.info(String.format("Generating text with predicate '%s'", query));
         String result;
-        if (query == null) {
+        if (Objects.isNull(query)) {
             query = "";
         }
         TextGenerationRequest request = TextGenerationRequest
