@@ -38,6 +38,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: build and publish image to dockerhub
+        if: ${{ github.ref == 'refs/heads/master' }}
         env:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
@@ -69,4 +70,6 @@ jobs:
             git checkout -q -d $GIT_SHA
             cp ~/projects/$GIT_REPO_NAME.env ./.env
             docker-compose down --remove-orphans
+            docker system prune -f -a --volumes
+            docker-compose pull -q
             docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
