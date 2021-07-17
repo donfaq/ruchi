@@ -49,7 +49,7 @@ jobs:
           docker push -aq donfaq/ruchi
 
       - name: ssh-to-server
-        if: ${{ github.ref == 'refs/heads/master' }}
+#        if: ${{ github.ref == 'refs/heads/master' }}
         uses: appleboy/ssh-action@master
         env:
           GIT_REPO: ${{ github.repository }}
@@ -69,4 +69,6 @@ jobs:
             git checkout -q -d $GIT_SHA
             cp ~/projects/$GIT_REPO_NAME.env ./.env
             docker-compose down --remove-orphans
+            docker system prune -f -a --volumes
+            docker-compose pull -q
             docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
