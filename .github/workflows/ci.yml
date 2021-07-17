@@ -38,6 +38,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: build and publish image to dockerhub
+        if: ${{ github.ref == 'refs/heads/master' }}
         env:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
