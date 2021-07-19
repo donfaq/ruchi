@@ -2,8 +2,6 @@ name: build
 
 on:
   push:
-    branches:
-    tags:
 
 jobs:
   build:
@@ -29,47 +27,3 @@ jobs:
 
       - name: build and test
         run: mvn -B package --file pom.xml
-
-      - name: Login to DockerHub
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: docker/login-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: build and publish image to dockerhub
-        if: ${{ github.ref == 'refs/heads/master' }}
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_REF: ${{ github.ref }}
-        run: |
-          ref="$(echo ${GITHUB_REF} | cut -d'/' -f3)"
-          echo GITHUB_REF - $ref
-          mvn -B spring-boot:build-image -DskipTests
-          docker tag donfaq/ruchi:latest donfaq/ruchi:${ref}
-          docker push -aq donfaq/ruchi
-
-      - name: ssh-to-server
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: appleboy/ssh-action@master
-        env:
-          GIT_REPO: ${{ github.repository }}
-          GIT_REPO_NAME: ${{ github.event.repository.name }}
-          GIT_SHA: ${{ github.sha }}
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          envs: GIT_REPO,GIT_SHA,GIT_REPO_NAME
-          script: |
-            rm -rf ~/projects/$GIT_REPO_NAME
-            cd ~/projects
-            git clone git@github.com:$GIT_REPO.git
-            cd ~/projects/$GIT_REPO_NAME
-            git checkout -q -d $GIT_SHA
-            cp ~/projects/$GIT_REPO_NAME.env ./.env
-            docker-compose down --remove-orphans
-            docker system prune -f -a --volumes
-            docker-compose pull -q
-            docker-compose up --detach --no-color --quiet-pull --force-recreate --renew-anon-volumes --remove-orphans
