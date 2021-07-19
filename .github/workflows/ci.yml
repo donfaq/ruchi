@@ -32,6 +32,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/master' }}
     needs: [ build ]
     runs-on: ubuntu-latest
+    concurrency: deployment
 
     steps:
       - name: Set up Java
