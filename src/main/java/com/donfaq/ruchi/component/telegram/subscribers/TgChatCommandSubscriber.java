@@ -92,6 +92,7 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
             case "gachi" -> replyToMessage(message, textGeneratorCommand.gachi(query).orElse(defaultResponse));
             case "kalik" -> replyToMessage(message, textGeneratorCommand.kalik(query).orElse(defaultResponse));
             case "help" -> replyToMessage(message, helpMessage);
+            case "start" -> replyToMessage(message, "Привет! " + helpMessage);
             default -> replyToMessage(message,
                     """
                     Я такое не умею
