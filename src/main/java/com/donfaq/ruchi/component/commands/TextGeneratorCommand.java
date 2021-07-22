@@ -12,24 +12,42 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TextGeneratorCommand {
     private final TextGeneratorClient textGeneratorClient;
+    private static final int UNLIMITED_LENGTH = -1;
 
-    private Optional<String> generateText(String model, String query) {
-        return Optional.of(textGeneratorClient.generateText(model, query, 240));
+    private Optional<String> generateText(String model, String query, int maxLenght) {
+        return Optional.of(textGeneratorClient.generateText(model, query, maxLenght));
+    }
+
+    public Optional<String> speak(String query, int maxLength) {
+        return generateText("chat", query, maxLength);
     }
 
     public Optional<String> speak(String query) {
-        return generateText("chat", query);
+        return generateText("chat", query, UNLIMITED_LENGTH);
+    }
+
+    public Optional<String> pron(String query, int maxLength) {
+        return generateText("pron", query, maxLength);
     }
 
     public Optional<String> pron(String query) {
-        return generateText("pron", query);
+        return generateText("pron", query, UNLIMITED_LENGTH);
+    }
+
+    public Optional<String> gachi(String query, int maxLength) {
+        return generateText("gachi", query, maxLength);
     }
 
     public Optional<String> gachi(String query) {
-        return generateText("gachi", query);
+        return generateText("gachi", query, UNLIMITED_LENGTH);
+    }
+
+    public Optional<String> kalik(String query, int maxLength) {
+        return generateText("kalik", query, maxLength);
     }
 
     public Optional<String> kalik(String query) {
-        return generateText("kalik", query);
+        return generateText("kalik", query, UNLIMITED_LENGTH);
     }
+
 }

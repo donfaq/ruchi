@@ -25,7 +25,7 @@ public class TextGeneratorClient {
         blockingStub = TextGenerationServiceGrpc.newBlockingStub(managedChannel);
     }
 
-    public String generateText(String model, String query, int maxLength) {
+    public String generateText(String model, String query, Integer maxLength) {
         log.info(String.format("Generating text with predicate '%s'", query));
         String result;
         if (Objects.isNull(query)) {

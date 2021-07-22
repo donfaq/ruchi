@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ReactToChatCommand {
+    private static final int MAX_LENGTH = 240;
     private final TextGeneratorCommand textGeneratorCommand;
 
     public ReactToChatCommand(TwitchClient twitchClient, TextGeneratorCommand textGeneratorCommand) {
@@ -38,10 +39,10 @@ public class ReactToChatCommand {
         String defaultResponse = "Что-то пошло не так";
         switch (command) {
             case "ping" -> event.respondToUser("pong");
-            case "speak" -> event.respondToUser(textGeneratorCommand.speak(query).orElse(defaultResponse));
-            case "pron" -> event.respondToUser(textGeneratorCommand.pron(query).orElse(defaultResponse));
-            case "gachi" -> event.respondToUser(textGeneratorCommand.gachi(query).orElse(defaultResponse));
-            case "kalik" -> event.respondToUser(textGeneratorCommand.kalik(query).orElse(defaultResponse));
+            case "speak" -> event.respondToUser(textGeneratorCommand.speak(query,  MAX_LENGTH).orElse(defaultResponse));
+            case "pron" -> event.respondToUser(textGeneratorCommand.pron(query, MAX_LENGTH).orElse(defaultResponse));
+            case "gachi" -> event.respondToUser(textGeneratorCommand.gachi(query, MAX_LENGTH).orElse(defaultResponse));
+            case "kalik" -> event.respondToUser(textGeneratorCommand.kalik(query, MAX_LENGTH).orElse(defaultResponse));
             default -> event.respondToUser("Я такое не умею :(");
         }
     }
