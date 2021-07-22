@@ -90,10 +90,10 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
                 """;
         switch (command) {
             case "ping" -> replyToMessage(message, "pong");
-            case "speak" -> replyToMessage(message, textGeneratorCommand.speak(query, null).orElse(defaultResponse));
-            case "pron" -> replyToMessage(message, textGeneratorCommand.pron(query, null).orElse(defaultResponse));
-            case "gachi" -> replyToMessage(message, textGeneratorCommand.gachi(query, null).orElse(defaultResponse));
-            case "kalik" -> replyToMessage(message, textGeneratorCommand.kalik(query, null).orElse(defaultResponse));
+            case "speak" -> replyToMessage(message, textGeneratorCommand.speak(query).orElse(defaultResponse));
+            case "pron" -> replyToMessage(message, textGeneratorCommand.pron(query).orElse(defaultResponse));
+            case "gachi" -> replyToMessage(message, textGeneratorCommand.gachi(query).orElse(defaultResponse));
+            case "kalik" -> replyToMessage(message, textGeneratorCommand.kalik(query).orElse(defaultResponse));
             case "help" -> replyToMessage(message, helpMessage);
             case "start" -> replyToMessage(message, "Привет! " + helpMessage);
             default -> replyToMessage(message,
