@@ -46,7 +46,8 @@ public class DiscordClientConfig {
                              .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)"),
                      new CommandData("gachi", "Gachimuchi-гороскоп"),
                      new CommandData("kalik", "Пишет в чат фразу на языке калюмбаса"),
-                     new CommandData("pron", "Генерирует название порноролика")
+                     new CommandData("pron", "Генерирует название порноролика"),
+                     new CommandData("woman", "Генерирует типичное сообщение на женском форуме")
              )
              .queue();
 

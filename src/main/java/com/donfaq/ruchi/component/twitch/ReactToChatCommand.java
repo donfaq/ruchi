@@ -43,6 +43,7 @@ public class ReactToChatCommand {
             case "pron" -> event.respondToUser(textGeneratorCommand.pron(query, MAX_LENGTH).orElse(defaultResponse));
             case "gachi" -> event.respondToUser(textGeneratorCommand.gachi(query, MAX_LENGTH).orElse(defaultResponse));
             case "kalik" -> event.respondToUser(textGeneratorCommand.kalik(query, MAX_LENGTH).orElse(defaultResponse));
+            case "woman" -> event.respondToUser(textGeneratorCommand.woman(query, MAX_LENGTH).orElse(defaultResponse));
             default -> event.respondToUser("Я такое не умею :(");
         }
     }
