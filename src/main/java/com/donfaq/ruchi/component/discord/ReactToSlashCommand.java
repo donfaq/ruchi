@@ -39,6 +39,7 @@ public class ReactToSlashCommand extends ListenerAdapter {
                 case "pron" -> textGen.pron(getQuery(event)).orElse(defaultResponse);
                 case "gachi" -> textGen.gachi(getQuery(event)).orElse(defaultResponse);
                 case "kalik" -> textGen.kalik(getQuery(event)).orElse(defaultResponse);
+                case "woman" -> textGen.woman(getQuery(event)).orElse(defaultResponse);
                 default -> "Я такое не умею :(";
             };
         } catch (Exception e) {

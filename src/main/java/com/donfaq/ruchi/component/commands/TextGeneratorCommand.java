@@ -50,4 +50,10 @@ public class TextGeneratorCommand {
         return generateText("kalik", query, UNLIMITED_LENGTH);
     }
 
+    public Optional<String> woman(String query) {return generateText("woman", query, UNLIMITED_LENGTH);}
+
+    public Optional<String> woman(String query, int maxLength) {
+        return generateText("woman", query, maxLength);
+    }
+
 }
