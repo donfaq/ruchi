@@ -68,6 +68,9 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
                         commandEntity.offset() + 1,
                         commandEntity.offset() + commandEntity.length()
                 ).toLowerCase();
+        if (command.contains("@")) {
+            command = command.split("@")[0];
+        }
         String query = message
                 .text()
                 .substring(commandEntity.offset() + commandEntity.length())
