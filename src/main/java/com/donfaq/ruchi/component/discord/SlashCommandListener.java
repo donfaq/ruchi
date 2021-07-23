@@ -13,7 +13,7 @@ import java.util.Objects;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReactToSlashCommand extends ListenerAdapter {
+public class SlashCommandListener extends ListenerAdapter {
     private final TextGeneratorCommand textGen;
 
     private String getQuery(SlashCommandEvent event) {
@@ -27,7 +27,11 @@ public class ReactToSlashCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
-        event.deferReply().queue();
+        event.deferReply()
+             .queue(
+                     (commands) -> log.info("successfully marked slash command as noticed"),
+                     (throwable) -> log.error("error marking slash command as noticed", throwable)
+             );
         log.info(event.getName());
 
         String defaultResponse = "Что-то пошло не так";
@@ -45,7 +49,12 @@ public class ReactToSlashCommand extends ListenerAdapter {
         } catch (Exception e) {
             log.warn("Exception during response generation", e);
         }
-        event.getHook().sendMessage(responseMessage).queue();
+        event.getHook()
+             .sendMessage(responseMessage)
+             .queue(
+                     (commands) -> log.info("successfully responded to slash command '{}'", event.getName()),
+                     (throwable) -> log.error("error during response to slash command '{}'", event.getName(), throwable)
+             );
     }
 
 }
