@@ -56,4 +56,10 @@ public class TextGeneratorCommand {
         return generateText("woman", query, maxLength);
     }
 
+    public Optional<String> spam(String query) {return generateText("spam", query, UNLIMITED_LENGTH);}
+
+    public Optional<String> spam(String query, int maxLength) {
+        return generateText("spam", query, maxLength);
+    }
+
 }

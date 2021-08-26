@@ -21,12 +21,13 @@ public class DiscordReadyListener extends ListenerAdapter {
         guild.updateCommands()
              .addCommands(
                      new CommandData("ping", "pong"),
-                     new CommandData("speak", "Пишет в чат фразу, сгенерированную из логов чата")
+                     new CommandData("speak", "Фраза, сгенерированная из логов чата")
                              .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)"),
                      new CommandData("gachi", "Gachimuchi-гороскоп"),
-                     new CommandData("kalik", "Пишет в чат фразу на языке калюмбаса"),
-                     new CommandData("pron", "Генерирует название порноролика"),
-                     new CommandData("woman", "Генерирует типичное сообщение на женском форуме")
+                     new CommandData("kalik", "Фраза на языке калюмбаса"),
+                     new CommandData("pron", "Название порноролика"),
+                     new CommandData("woman", "Типичное сообщение на женском форуме"),
+                     new CommandData("spam", "Кричащий заголовок спам-рекламы")
              ).queue(
                 (commands) -> log.info("successfully updated commands in guild '{}'", guild.getName()),
                 (throwable) -> log.error("error during updating commands in guild '{}'", guild.getName(), throwable)
