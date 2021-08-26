@@ -83,12 +83,12 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
                 Вот список доступных команд:
                 - `/help` - выводит это сообщение
                 - `/ping` - pong
-                - `/speak [начало]` - генерирует текст на основе истории общения с кожаными мешками
-                - `/pron [начало]` - генерирует название порноролика
-                - `/kalik [начало]` - генерирует текст на языке народа калюмбаса
-                - `/woman [начало]` - генерирует типичное сообщение с женского форума
-                - `/gachi` - генерирует ваш астральный гачимучи-гороскоп
-                
+                - `/speak [начало]` - текст на основе истории общения с кожаными мешками
+                - `/pron [начало]` - название порноролика
+                - `/kalik [начало]` - текст на языке народа калюмбаса
+                - `/woman [начало]` - типичное сообщение с женского форума
+                - `/gachi` - ваш астральный гачимучи-гороскоп
+                - `/spam` - кричащий рекламный заголовок
                 """;
         switch (command) {
             case "ping" -> replyToMessage(message, "pong");
@@ -97,6 +97,7 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
             case "gachi" -> replyToMessage(message, textGeneratorCommand.gachi(query).orElse(defaultResponse));
             case "kalik" -> replyToMessage(message, textGeneratorCommand.kalik(query).orElse(defaultResponse));
             case "woman" -> replyToMessage(message, textGeneratorCommand.woman(query).orElse(defaultResponse));
+            case "spam" -> replyToMessage(message, textGeneratorCommand.spam(query).orElse(defaultResponse));
             case "help" -> replyToMessage(message, helpMessage);
             case "start" -> replyToMessage(message, "Привет! " + helpMessage);
             default -> replyToMessage(message,
