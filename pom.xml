@@ -19,7 +19,7 @@
         <maven.compiler.target>16</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>${parent.version}</spring.boot.version>
-        <grpc.version>1.39.0</grpc.version>
+        <grpc.version>1.40.1</grpc.version>
     </properties>
 
     <repositories>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>5.0.1</version>
+            <version>5.1.0</version>
         </dependency>
 
         <dependency>
