@@ -4,7 +4,9 @@ import com.donfaq.ruchi.component.commands.TextGeneratorCommand;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.MessageEntity;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.request.GetMe;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,14 @@ import java.util.concurrent.Flow;
 public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
     private final TelegramBot bot;
     private final TextGeneratorCommand textGeneratorCommand;
+    private final User botUser;
     private Flow.Subscription subscription;
+
+    public TgChatCommandSubscriber(TelegramBot bot, TextGeneratorCommand textGeneratorCommand) {
+        this.bot = bot;
+        this.textGeneratorCommand = textGeneratorCommand;
+        this.botUser = bot.execute(new GetMe()).user();
+    }
 
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
@@ -69,7 +78,12 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
                         commandEntity.offset() + commandEntity.length()
                 ).toLowerCase();
         if (command.contains("@")) {
-            command = command.split("@")[0];
+            String[] parts = command.split("@");
+            if (!botUser.username().equals(parts[1])) {
+                log.info("other bot command");
+                return;
+            }
+            command = parts[0];
         }
         String query = message
                 .text()
