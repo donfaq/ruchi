@@ -36,6 +36,9 @@ public class VkCallbackHandler {
     }
 
     public String parse(CallbackMessage message) {
+        if (message.getType() == null) {
+            return OK_RESPONSE;
+        }
         switch (message.getType()) {
             case CONFIRMATION:
                 return confirmation();
