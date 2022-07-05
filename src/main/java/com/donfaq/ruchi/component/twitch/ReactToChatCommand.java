@@ -45,6 +45,7 @@ public class ReactToChatCommand {
             case "kalik" -> event.respondToUser(textGeneratorCommand.kalik(query, MAX_LENGTH).orElse(defaultResponse));
             case "woman" -> event.respondToUser(textGeneratorCommand.woman(query, MAX_LENGTH).orElse(defaultResponse));
             case "spam" -> event.respondToUser(textGeneratorCommand.spam(query, MAX_LENGTH).orElse(defaultResponse));
+            case "vata" -> event.respondToUser(textGeneratorCommand.vata(query, MAX_LENGTH).orElse(defaultResponse));
             default -> event.respondToUser("Я такое не умею :(");
         }
     }
