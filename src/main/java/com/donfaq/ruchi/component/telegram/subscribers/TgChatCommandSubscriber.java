@@ -103,6 +103,7 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
                 - `/woman [начало]` - типичное сообщение с женского форума
                 - `/gachi` - ваш астральный гачимучи-гороскоп
                 - `/spam` - кричащий рекламный заголовок
+                - `/vata` - белая и пушистая
                 """;
         switch (command) {
             case "ping" -> replyToMessage(message, "pong");
@@ -112,6 +113,7 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
             case "kalik" -> replyToMessage(message, textGeneratorCommand.kalik(query).orElse(defaultResponse));
             case "woman" -> replyToMessage(message, textGeneratorCommand.woman(query).orElse(defaultResponse));
             case "spam" -> replyToMessage(message, textGeneratorCommand.spam(query).orElse(defaultResponse));
+            case "vata" -> replyToMessage(message, textGeneratorCommand.vata(query).orElse(defaultResponse));
             case "help" -> replyToMessage(message, helpMessage);
             case "start" -> replyToMessage(message, "Привет! " + helpMessage);
             default -> replyToMessage(message,

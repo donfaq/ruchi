@@ -23,6 +23,7 @@ public class TextgenService {
                 case "kalik" -> textGen.kalik("").orElse(defaultResponse);
                 case "woman" -> textGen.woman("").orElse(defaultResponse);
                 case "spam" -> textGen.spam("").orElse(defaultResponse);
+                case "vata" -> textGen.vata("").orElse(defaultResponse);
                 default -> defaultResponse;
             };
         } catch (Exception e) {

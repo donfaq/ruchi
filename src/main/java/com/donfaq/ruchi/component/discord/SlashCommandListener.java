@@ -45,6 +45,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 case "kalik" -> textGen.kalik(getQuery(event)).orElse(defaultResponse);
                 case "woman" -> textGen.woman(getQuery(event)).orElse(defaultResponse);
                 case "spam" -> textGen.spam(getQuery(event)).orElse(defaultResponse);
+                case "vata" -> textGen.vata(getQuery(event)).orElse(defaultResponse);
                 default -> "Я такое не умею :(";
             };
         } catch (Exception e) {

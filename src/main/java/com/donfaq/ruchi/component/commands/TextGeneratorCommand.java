@@ -62,4 +62,10 @@ public class TextGeneratorCommand {
         return generateText("spam", query, maxLength);
     }
 
+    public Optional<String> vata(String query) {return generateText("patriot", query, UNLIMITED_LENGTH);}
+
+    public Optional<String> vata(String query, int maxLength) {
+        return generateText("patriot", query, maxLength);
+    }
+
 }

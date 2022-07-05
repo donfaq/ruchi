@@ -27,7 +27,8 @@ public class DiscordReadyListener extends ListenerAdapter {
                      new CommandData("kalik", "Фраза на языке калюмбаса"),
                      new CommandData("pron", "Название порноролика"),
                      new CommandData("woman", "Типичное сообщение на женском форуме"),
-                     new CommandData("spam", "Кричащий заголовок спам-рекламы")
+                     new CommandData("spam", "Кричащий заголовок спам-рекламы"),
+                     new CommandData("vata", "Белая и пушистая")
              ).queue(
                 (commands) -> log.info("successfully updated commands in guild '{}'", guild.getName()),
                 (throwable) -> log.error("error during updating commands in guild '{}'", guild.getName(), throwable)
