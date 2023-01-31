@@ -10,9 +10,8 @@ import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -23,15 +22,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class VkWallpostProcessor {
     private final VkApiService vkApiService;
     private final BroadcastService broadcastService;
     private final BlockingMemory memory;
     private final VkConfigProperties vkConfig;
+    private final Logger log = LoggerFactory.getLogger(VkWallpostProcessor.class);
 
+    public VkWallpostProcessor(VkApiService vkApiService, BroadcastService broadcastService, BlockingMemory memory, VkConfigProperties vkConfig) {
+        this.vkApiService = vkApiService;
+        this.broadcastService = broadcastService;
+        this.memory = memory;
+        this.vkConfig = vkConfig;
+    }
 
     private Optional<URI> getLargestPhotoUri(GetByIdLegacyResponse photo) {
         return photo
@@ -51,7 +55,8 @@ public class VkWallpostProcessor {
         return url;
     }
 
-    @SneakyThrows
+//    @SneakyThrows
+
     private List<URL> extractPhotoAttachments(List<WallpostAttachment> attachments) {
         List<URL> result = null;
         List<String> photoIds = attachments
@@ -85,12 +90,11 @@ public class VkWallpostProcessor {
             return;
         }
 
-        if (wallpost.getText() != null && wallpost.getText().contains(this.vkConfig.getTriggerString())) {
-            BroadcastMessage message = new BroadcastMessage();
-            message.setText(wallpost.getText());
+        if (wallpost.getText() != null && wallpost.getText().contains(this.vkConfig.triggerString())) {
+            BroadcastMessage message = new BroadcastMessage(wallpost.getText(), null);
 
             if (wallpost.getAttachments() != null && !wallpost.getAttachments().isEmpty()) {
-                message.setImages(extractPhotoAttachments(wallpost.getAttachments()));
+                message = new BroadcastMessage(wallpost.getText(), extractPhotoAttachments(wallpost.getAttachments()));
             }
 
             if (this.memory.contains(message)) {

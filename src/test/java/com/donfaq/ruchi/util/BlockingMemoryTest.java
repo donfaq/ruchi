@@ -12,8 +12,7 @@ public class BlockingMemoryTest {
     public void testAddMessage() {
         BlockingMemory memory = new BlockingMemory();
 
-        BroadcastMessage message = new BroadcastMessage();
-        message.setText("hello");
+        BroadcastMessage message = new BroadcastMessage("hello", null);
 
         assertFalse(memory.contains(message));
         memory.add(message);
@@ -26,12 +25,9 @@ public class BlockingMemoryTest {
     public void testMemorySize() {
         BlockingMemory memory = new BlockingMemory(2);
 
-        BroadcastMessage message1 = new BroadcastMessage();
-        message1.setText("message1");
-        BroadcastMessage message2 = new BroadcastMessage();
-        message2.setText("message2");
-        BroadcastMessage message3 = new BroadcastMessage();
-        message3.setText("message3");
+        BroadcastMessage message1 = new BroadcastMessage("message1", null);
+        BroadcastMessage message2 = new BroadcastMessage("message2", null);
+        BroadcastMessage message3 = new BroadcastMessage("message3", null);
 
         memory.add(message1);
         memory.add(message2);

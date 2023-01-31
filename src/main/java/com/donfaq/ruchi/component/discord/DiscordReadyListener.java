@@ -1,7 +1,5 @@
 package com.donfaq.ruchi.component.discord;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -9,30 +7,32 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class DiscordReadyListener extends ListenerAdapter {
+
+    private final Logger log = LoggerFactory.getLogger(DiscordReadyListener.class);
 
     private void updateSlashCommands(Guild guild) {
         log.info("Updating bot slash commands list for guild '{}'", guild.getName());
         guild.updateCommands()
-             .addCommands(
-                     new CommandData("ping", "pong"),
-                     new CommandData("speak", "Фраза, сгенерированная из логов чата")
-                             .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)"),
-                     new CommandData("gachi", "Gachimuchi-гороскоп"),
-                     new CommandData("kalik", "Фраза на языке калюмбаса"),
-                     new CommandData("pron", "Название порноролика"),
-                     new CommandData("woman", "Типичное сообщение на женском форуме"),
-                     new CommandData("spam", "Кричащий заголовок спам-рекламы"),
-                     new CommandData("vata", "Белая и пушистая")
-             ).queue(
-                (commands) -> log.info("successfully updated commands in guild '{}'", guild.getName()),
-                (throwable) -> log.error("error during updating commands in guild '{}'", guild.getName(), throwable)
-        );
+                .addCommands(
+                        new CommandData("ping", "pong"),
+                        new CommandData("speak", "Фраза, сгенерированная из логов чата")
+                                .addOption(OptionType.STRING, "начало", "Начало для фразы (может быть проигнорировано)"),
+                        new CommandData("gachi", "Gachimuchi-гороскоп"),
+                        new CommandData("kalik", "Фраза на языке калюмбаса"),
+                        new CommandData("pron", "Название порноролика"),
+                        new CommandData("woman", "Типичное сообщение на женском форуме"),
+                        new CommandData("spam", "Кричащий заголовок спам-рекламы"),
+                        new CommandData("vata", "Белая и пушистая")
+                ).queue(
+                        (commands) -> log.info("successfully updated commands in guild '{}'", guild.getName()),
+                        (throwable) -> log.error("error during updating commands in guild '{}'", guild.getName(), throwable)
+                );
     }
 
     @Override

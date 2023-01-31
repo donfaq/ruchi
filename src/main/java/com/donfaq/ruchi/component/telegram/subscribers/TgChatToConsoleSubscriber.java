@@ -1,14 +1,15 @@
 package com.donfaq.ruchi.component.telegram.subscribers;
 
 import com.pengrad.telegrambot.model.Message;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.Flow;
 
-@Slf4j
 public class TgChatToConsoleSubscriber implements Flow.Subscriber<Message> {
     private Flow.Subscription subscription;
+    private final Logger log = LoggerFactory.getLogger(TgChatCommandSubscriber.class);
 
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
@@ -20,10 +21,7 @@ public class TgChatToConsoleSubscriber implements Flow.Subscriber<Message> {
     @Override
     public void onNext(Message message) {
         try {
-            log.info("Tg: @{}: {} ",
-                    message.chat().username(),
-                    Optional.of(message.text()).orElse("<EMPTY>")
-            );
+            log.info("Tg: @{}: {} ", message.chat().username(), Optional.of(message.text()).orElse("<EMPTY>"));
         } finally {
             subscription.request(1);
         }

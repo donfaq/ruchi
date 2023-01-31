@@ -43,11 +43,8 @@ class VkWallpostProcessorTest {
         vkApiService = Mockito.mock(VkApiService.class);
         broadcastService = Mockito.mock(BroadcastService.class);
 
-        vkConfig = new VkConfigProperties();
-        vkConfig.setTriggerString(TEXT_WITH_TRIGGER);
-        wallpostProcessor = new VkWallpostProcessor(
-                vkApiService, broadcastService, memory, vkConfig
-        );
+        vkConfig = new VkConfigProperties("", "", TEXT_WITH_TRIGGER);
+        wallpostProcessor = new VkWallpostProcessor(vkApiService, broadcastService, memory, vkConfig);
     }
 
     @Test
@@ -58,12 +55,10 @@ class VkWallpostProcessorTest {
 
         wallpostProcessor.process(wallpost);
 
-        BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TEXT_WITH_TRIGGER);
+        BroadcastMessage broadcastMessage = new BroadcastMessage(TEXT_WITH_TRIGGER, null);
 
         assertTrue(memory.contains(broadcastMessage));
-        Mockito.verify(broadcastService, Mockito.times(1))
-               .broadcast(eq(broadcastMessage));
+        Mockito.verify(broadcastService, Mockito.times(1)).broadcast(eq(broadcastMessage));
         Mockito.verifyNoInteractions(vkApiService);
     }
 
@@ -75,8 +70,7 @@ class VkWallpostProcessorTest {
 
         wallpostProcessor.process(wallpost);
 
-        BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TEXT_WITHOUT_TRIGGER);
+        BroadcastMessage broadcastMessage = new BroadcastMessage(TEXT_WITHOUT_TRIGGER, null);
 
         assertFalse(memory.contains(broadcastMessage));
         Mockito.verifyNoInteractions(broadcastService);
@@ -120,13 +114,10 @@ class VkWallpostProcessorTest {
         Mockito.when(vkApiService.getPhotoById(photoIdsList)).thenReturn(photosGetByIdResponse);
         wallpostProcessor.process(wallpost);
 
-        BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TEXT_WITH_TRIGGER);
-        broadcastMessage.setImages(List.of(urlZ.toURL()));
+        BroadcastMessage broadcastMessage = new BroadcastMessage(TEXT_WITH_TRIGGER, List.of(urlZ.toURL()));
 
         assertTrue(memory.contains(broadcastMessage));
-        Mockito.verify(broadcastService, Mockito.times(1))
-               .broadcast(eq(broadcastMessage));
+        Mockito.verify(broadcastService, Mockito.times(1)).broadcast(eq(broadcastMessage));
         Mockito.verify(vkApiService, Mockito.times(1)).getPhotoById(photoIdsList);
     }
 
@@ -143,12 +134,10 @@ class VkWallpostProcessorTest {
 
         wallpostProcessor.process(wallpost);
 
-        BroadcastMessage broadcastMessage = new BroadcastMessage();
-        broadcastMessage.setText(TEXT_WITH_TRIGGER);
+        BroadcastMessage broadcastMessage = new BroadcastMessage(TEXT_WITH_TRIGGER, null);
 
         assertTrue(memory.contains(broadcastMessage));
-        Mockito.verify(broadcastService, Mockito.times(1))
-               .broadcast(eq(broadcastMessage));
+        Mockito.verify(broadcastService, Mockito.times(1)).broadcast(eq(broadcastMessage));
         Mockito.verifyNoInteractions(vkApiService);
     }
 }

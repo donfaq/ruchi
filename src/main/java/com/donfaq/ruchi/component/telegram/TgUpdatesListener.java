@@ -7,18 +7,19 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
 
-@Slf4j
-@RequiredArgsConstructor
 public class TgUpdatesListener implements UpdatesListener {
     private final TelegramBot bot;
     private final TextGeneratorCommand textGeneratorCommand;
+
+    public TgUpdatesListener(TelegramBot bot, TextGeneratorCommand textGeneratorCommand) {
+        this.bot = bot;
+        this.textGeneratorCommand = textGeneratorCommand;
+    }
 
     @Override
     public int process(List<Update> updates) {

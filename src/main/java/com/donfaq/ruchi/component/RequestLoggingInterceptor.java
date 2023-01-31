@@ -1,7 +1,7 @@
 package com.donfaq.ruchi.component;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -13,13 +13,13 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class RequestLoggingInterceptor implements ClientHttpRequestInterceptor {
+
+    private final Logger log = LoggerFactory.getLogger(RequestLoggingInterceptor.class);
+
     @Override
-    public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-                                        ClientHttpRequestExecution execution) throws IOException {
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         traceRequest(request, body);
         return execution.execute(request, body);
 
@@ -30,7 +30,6 @@ public class RequestLoggingInterceptor implements ClientHttpRequestInterceptor {
         if (headers.containsKey("Authorization")) {
             headers.put("Authorization", "<token>");
         }
-        log.info("{} {} headers: {} payload: {}",
-                request.getMethod(), request.getURI(), headers, new String(body, UTF_8));
+        log.info("{} {} headers: {} payload: {}", request.getMethod(), request.getURI(), headers, new String(body, UTF_8));
     }
 }

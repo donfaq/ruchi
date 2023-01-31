@@ -17,9 +17,7 @@ public class VkCallbackHandlerTest {
     @BeforeEach
     void setUp() {
 
-        this.vkConfig = new VkConfigProperties();
-        vkConfig.setConfirmationCode("testValue");
-
+        this.vkConfig = new VkConfigProperties("testValue", "", "");
         vkWallpostProcessor = Mockito.mock(VkWallpostProcessor.class);
         vkCallbackHandler = new VkCallbackHandler(vkConfig, vkWallpostProcessor);
     }
@@ -28,7 +26,7 @@ public class VkCallbackHandlerTest {
     public void testConfirmationMessage() {
         String inputJson = "{\"type\": confirmation}";
         String result = vkCallbackHandler.parse(inputJson);
-        assertEquals(vkConfig.getConfirmationCode(), result);
+        assertEquals(vkConfig.confirmationCode(), result);
     }
 
     @Test
@@ -38,8 +36,7 @@ public class VkCallbackHandlerTest {
         String result = vkCallbackHandler.parse(inputJson);
         assertEquals("ok", result);
 
-        Mockito.verify(vkWallpostProcessor, Mockito.times(1))
-               .process(eq(new Wallpost()));
+        Mockito.verify(vkWallpostProcessor, Mockito.times(1)).process(eq(new Wallpost()));
     }
 
     @Test
@@ -49,8 +46,7 @@ public class VkCallbackHandlerTest {
         String result = vkCallbackHandler.parse(inputJson);
         assertEquals("ok", result);
 
-        Mockito.verify(vkWallpostProcessor, Mockito.times(0))
-               .process(eq(new Wallpost()));
+        Mockito.verify(vkWallpostProcessor, Mockito.times(0)).process(eq(new Wallpost()));
     }
 
 }
