@@ -4,14 +4,15 @@ import com.donfaq.ruchi.component.commands.TextGeneratorCommand;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.CommandEvent;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class ReactToChatCommand {
     private static final int MAX_LENGTH = 240;
     private final TextGeneratorCommand textGeneratorCommand;
+    private final Logger log = LoggerFactory.getLogger(ReactToChatCommand.class);
 
     public ReactToChatCommand(TwitchClient twitchClient, TextGeneratorCommand textGeneratorCommand) {
         this.textGeneratorCommand = textGeneratorCommand;
@@ -39,7 +40,7 @@ public class ReactToChatCommand {
         String defaultResponse = "Что-то пошло не так";
         switch (command) {
             case "ping" -> event.respondToUser("pong");
-            case "speak" -> event.respondToUser(textGeneratorCommand.speak(query,  MAX_LENGTH).orElse(defaultResponse));
+            case "speak" -> event.respondToUser(textGeneratorCommand.speak(query, MAX_LENGTH).orElse(defaultResponse));
             case "pron" -> event.respondToUser(textGeneratorCommand.pron(query, MAX_LENGTH).orElse(defaultResponse));
             case "gachi" -> event.respondToUser(textGeneratorCommand.gachi(query, MAX_LENGTH).orElse(defaultResponse));
             case "kalik" -> event.respondToUser(textGeneratorCommand.kalik(query, MAX_LENGTH).orElse(defaultResponse));

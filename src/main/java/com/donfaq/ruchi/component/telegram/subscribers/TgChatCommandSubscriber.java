@@ -8,16 +8,16 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.GetMe;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 
-@Slf4j
-@RequiredArgsConstructor
 public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
+
+    private final Logger log = LoggerFactory.getLogger(TgChatCommandSubscriber.class);
     private final TelegramBot bot;
     private final TextGeneratorCommand textGeneratorCommand;
     private final User botUser;
@@ -68,9 +68,9 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
     public void onCommandMessage(Message message) {
         MessageEntity commandEntity =
                 Arrays.stream(message.entities())
-                      .filter(entity -> entity.type().equals(MessageEntity.Type.bot_command))
-                      .findFirst()
-                      .orElseThrow();
+                        .filter(entity -> entity.type().equals(MessageEntity.Type.bot_command))
+                        .findFirst()
+                        .orElseThrow();
         String command = message
                 .text()
                 .substring(
@@ -94,17 +94,17 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
         String defaultResponse = "Что-то пошло не так";
         String helpMessage =
                 """
-                Вот список доступных команд:
-                - `/help` - выводит это сообщение
-                - `/ping` - pong
-                - `/speak [начало]` - текст на основе истории общения с кожаными мешками
-                - `/pron [начало]` - название порноролика
-                - `/kalik [начало]` - текст на языке народа калюмбаса
-                - `/woman [начало]` - типичное сообщение с женского форума
-                - `/gachi` - ваш астральный гачимучи-гороскоп
-                - `/spam` - кричащий рекламный заголовок
-                - `/vata` - белая и пушистая
-                """;
+                        Вот список доступных команд:
+                        - `/help` - выводит это сообщение
+                        - `/ping` - pong
+                        - `/speak [начало]` - текст на основе истории общения с кожаными мешками
+                        - `/pron [начало]` - название порноролика
+                        - `/kalik [начало]` - текст на языке народа калюмбаса
+                        - `/woman [начало]` - типичное сообщение с женского форума
+                        - `/gachi` - ваш астральный гачимучи-гороскоп
+                        - `/spam` - кричащий рекламный заголовок
+                        - `/vata` - белая и пушистая
+                        """;
         switch (command) {
             case "ping" -> replyToMessage(message, "pong");
             case "speak" -> replyToMessage(message, textGeneratorCommand.speak(query).orElse(defaultResponse));
@@ -118,9 +118,9 @@ public class TgChatCommandSubscriber implements Flow.Subscriber<Message> {
             case "start" -> replyToMessage(message, "Привет! " + helpMessage);
             default -> replyToMessage(message,
                     """
-                    Я такое не умею
-                    Используй команду `/help` для просмотра всех команд
-                    """
+                            Я такое не умею
+                            Используй команду `/help` для просмотра всех команд
+                            """
             );
         }
     }

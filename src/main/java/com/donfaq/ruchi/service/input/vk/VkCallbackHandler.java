@@ -6,14 +6,15 @@ import com.google.gson.JsonObject;
 import com.vk.api.sdk.events.Events;
 import com.vk.api.sdk.objects.callback.messages.CallbackMessage;
 import com.vk.api.sdk.objects.wall.Wallpost;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class VkCallbackHandler {
     private final VkWallpostProcessor wallpostProcessor;
     private final VkConfigProperties vkConfig;
+    private final Logger log = LoggerFactory.getLogger(VkCallbackHandler.class);
 
     public VkCallbackHandler(VkConfigProperties vkConfig, VkWallpostProcessor wallpostProcessor) {
         this.vkConfig = vkConfig;
@@ -53,7 +54,7 @@ public class VkCallbackHandler {
     }
 
     private String confirmation() {
-        return this.vkConfig.getConfirmationCode();
+        return this.vkConfig.confirmationCode();
     }
 
 }

@@ -1,17 +1,20 @@
 package com.donfaq.ruchi.component.commands;
 
 import com.donfaq.ruchi.component.models.textgen.TextGeneratorClient;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class TextGeneratorCommand {
     private final TextGeneratorClient textGeneratorClient;
+
+    @Autowired
+    public TextGeneratorCommand(TextGeneratorClient textGeneratorClient) {
+        this.textGeneratorClient = textGeneratorClient;
+    }
+
     private static final int UNLIMITED_LENGTH = -1;
 
     private Optional<String> generateText(String model, String query, int maxLenght) {

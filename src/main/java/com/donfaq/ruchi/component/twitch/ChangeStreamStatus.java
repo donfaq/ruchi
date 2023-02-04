@@ -6,15 +6,18 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.events.ChannelGoOfflineEvent;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import java.util.Collections;
+
 @Component
 public class ChangeStreamStatus {
 
     private final TwitchClient twitchClient;
     private final BroadcastService broadcastService;
+    private final Logger log = LoggerFactory.getLogger(ChangeStreamStatus.class);
 
     public ChangeStreamStatus(TwitchClient twitchClient, BroadcastService broadcastService) {
         this.twitchClient = twitchClient;
@@ -35,7 +38,8 @@ public class ChangeStreamStatus {
         String channelUrl = String.format("https://www.twitch.tv/%s", event.getStream().getUserLogin());
         String gameName = event.getStream().getGameName();
         sendNotification(switch (gameName) {
-            case ("Just Chatting") -> String.format("Обкашливаем вопросики прямо сейчас. Смотреть и слушать вот тута: %s", channelUrl);
+            case ("Just Chatting") ->
+                    String.format("Обкашливаем вопросики прямо сейчас. Смотреть и слушать вот тута: %s", channelUrl);
             default -> String.format("Стрим по игре %s только что начался! Жду тебя туть: %s", gameName, channelUrl);
         });
     }
@@ -52,8 +56,7 @@ public class ChangeStreamStatus {
     }
 
     private void sendNotification(String notificationText) {
-        BroadcastMessage message = new BroadcastMessage();
-        message.setText(notificationText);
+        BroadcastMessage message = new BroadcastMessage(notificationText, null);
         broadcastService.broadcast(message);
     }
 

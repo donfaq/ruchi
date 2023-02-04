@@ -1,15 +1,17 @@
 package com.donfaq.ruchi.component;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ArrayBlockingQueue;
 
-@Slf4j
 @Component
 public class BlockingMemory {
+
+    private final Logger log = LoggerFactory.getLogger(BlockingMemory.class);
     private final ArrayBlockingQueue<String> memory;
     private static final int DEFAULT_SIZE = 5;
 

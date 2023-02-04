@@ -8,27 +8,30 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class TelegramOutputService implements OutputService {
 
     private final TelegramBot bot;
     private final TelegramConfigProperties properties;
 
+    private final Logger log = LoggerFactory.getLogger(TelegramOutputService.class);
+
+    public TelegramOutputService(TelegramBot bot, TelegramConfigProperties properties) {
+        this.bot = bot;
+        this.properties = properties;
+    }
+
     @Override
     public void send(BroadcastMessage message) {
 
-        if (message.getImages() != null) {
-            SendPhoto request = new SendPhoto(
-                    this.properties.getChannelId(), message.getImages().get(0).toString()
-            ).caption(message.getText());
+        if (message.images() != null) {
+            SendPhoto request = new SendPhoto(this.properties.channelId(), message.images().get(0).toString()).caption(message.text());
 
             bot.execute(request, new Callback<>() {
                 @Override
@@ -42,9 +45,7 @@ public class TelegramOutputService implements OutputService {
                 }
             });
         } else {
-            SendMessage request = new SendMessage(this.properties.getChannelId(), message.getText())
-                    .parseMode(ParseMode.HTML)
-                    .disableWebPagePreview(true);
+            SendMessage request = new SendMessage(this.properties.channelId(), message.text()).parseMode(ParseMode.HTML).disableWebPagePreview(true);
             bot.execute(request, new Callback<>() {
                 @Override
                 public void onResponse(SendMessage request, SendResponse response) {

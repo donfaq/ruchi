@@ -1,22 +1,28 @@
 package com.donfaq.ruchi.component.discord;
 
 import com.donfaq.ruchi.component.commands.TextGeneratorCommand;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class SlashCommandListener extends ListenerAdapter {
     private final TextGeneratorCommand textGen;
 
-    private String getQuery(SlashCommandEvent event) {
+    private final Logger log = LoggerFactory.getLogger(SlashCommandListener.class);
+
+    @Autowired
+    public SlashCommandListener(TextGeneratorCommand textGen) {
+        this.textGen = textGen;
+    }
+
+    private String getQuery(SlashCommandInteractionEvent event) {
         OptionMapping queryOption = event.getOption("начало");
         if (Objects.isNull(queryOption)) {
             return "";
@@ -26,12 +32,8 @@ public class SlashCommandListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
-        event.deferReply()
-             .queue(
-                     (commands) -> log.info("successfully marked slash command as noticed"),
-                     (throwable) -> log.error("error marking slash command as noticed", throwable)
-             );
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        event.deferReply().queue((commands) -> log.info("successfully marked slash command as noticed"), (throwable) -> log.error("error marking slash command as noticed", throwable));
         log.info(event.getName());
 
         String defaultResponse = "Что-то пошло не так";
@@ -51,12 +53,7 @@ public class SlashCommandListener extends ListenerAdapter {
         } catch (Exception e) {
             log.warn("Exception during response generation", e);
         }
-        event.getHook()
-             .sendMessage(responseMessage)
-             .queue(
-                     (commands) -> log.info("successfully responded to slash command '{}'", event.getName()),
-                     (throwable) -> log.error("error during response to slash command '{}'", event.getName(), throwable)
-             );
+        event.getHook().sendMessage(responseMessage).queue((commands) -> log.info("successfully responded to slash command '{}'", event.getName()), (throwable) -> log.error("error during response to slash command '{}'", event.getName(), throwable));
     }
 
 }

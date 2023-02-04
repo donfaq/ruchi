@@ -6,20 +6,22 @@ import com.donfaq.ruchi.proto.TextGenerationServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Slf4j
 @Component
 public class TextGeneratorClient {
     private final TextGenerationServiceGrpc.TextGenerationServiceBlockingStub blockingStub;
 
+    private final Logger log = LoggerFactory.getLogger(TextGeneratorClient.class);
+
     public TextGeneratorClient(ModelConfigProperties properties) {
         log.info("Initializing RPC connection to text generator");
         ManagedChannel managedChannel = ManagedChannelBuilder
-                .forAddress(properties.getAddress(), properties.getPort())
+                .forAddress(properties.address(), properties.port())
                 .usePlaintext()
                 .build();
         blockingStub = TextGenerationServiceGrpc.newBlockingStub(managedChannel);
