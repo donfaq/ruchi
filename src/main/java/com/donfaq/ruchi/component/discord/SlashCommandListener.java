@@ -1,7 +1,7 @@
 package com.donfaq.ruchi.component.discord;
 
 import com.donfaq.ruchi.component.commands.TextGeneratorCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class SlashCommandListener extends ListenerAdapter {
         this.textGen = textGen;
     }
 
-    private String getQuery(SlashCommandEvent event) {
+    private String getQuery(SlashCommandInteractionEvent event) {
         OptionMapping queryOption = event.getOption("начало");
         if (Objects.isNull(queryOption)) {
             return "";
@@ -32,7 +32,7 @@ public class SlashCommandListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         event.deferReply().queue((commands) -> log.info("successfully marked slash command as noticed"), (throwable) -> log.error("error marking slash command as noticed", throwable));
         log.info(event.getName());
 
