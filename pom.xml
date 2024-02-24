@@ -19,7 +19,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>3.2.3</spring.boot.version>
-        <grpc.version>1.48.1</grpc.version>
+        <grpc.version>1.61.1</grpc.version>
     </properties>
 
     <repositories>
@@ -102,13 +102,13 @@
         <dependency>
             <groupId>com.github.pengrad</groupId>
             <artifactId>java-telegram-bot-api</artifactId>
-            <version>6.3.0</version>
+            <version>7.1.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.twitch4j</groupId>
             <artifactId>twitch4j</artifactId>
-            <version>1.13.0</version>
+            <version>1.19.0</version>
         </dependency>
 
         <dependency>
